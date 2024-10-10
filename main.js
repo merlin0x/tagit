@@ -31,6 +31,7 @@ function createMainWindow() {
     width: 500,
     height: 260, // Увеличил высоту для отображения тегов
     frame: false,
+    backgroundColor: '#121212',
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
@@ -47,6 +48,7 @@ function createViewWindow() {
     width: 800,
     height: 600,
     frame: false,
+    backgroundColor: '#121212',
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
