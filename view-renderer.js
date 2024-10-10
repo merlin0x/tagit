@@ -6,6 +6,38 @@
 const filterInput = document.getElementById('filterInput');
 filterInput.focus();
 
+// Функция отображения уведомлений
+function showNotification(message, type = 'info') {
+  const notificationContainer = document.getElementById('notification-container');
+
+  const notification = document.createElement('div');
+  notification.classList.add('notification', type);
+  notification.innerHTML = `
+    <span>${message}</span>
+    <button class="close-button" aria-label="Close">&times;</button>
+  `;
+
+  // Добавляем уведомление в контейнер
+  notificationContainer.appendChild(notification);
+
+  // Автоматическое удаление уведомления через 3 секунды
+  setTimeout(() => {
+    notification.classList.add('hide');
+    // Удаляем элемент после окончания анимации
+    notification.addEventListener('animationend', () => {
+      notification.remove();
+    });
+  }, 3000);
+
+  // Обработчик для закрытия уведомления вручную
+  notification.querySelector('.close-button').addEventListener('click', () => {
+    notification.classList.add('hide');
+    notification.addEventListener('animationend', () => {
+      notification.remove();
+    });
+  });
+}
+
 // Функция отображения контента
 async function displaySavedContent(searchType = 'all', searchValue = '') {
   const savedContent = await window.electronAPI.getSavedContent({ type: searchType, value: searchValue });
@@ -47,10 +79,12 @@ async function displaySavedContent(searchType = 'all', searchValue = '') {
 async function copyToClipboard(text) {
   const result = await window.electronAPI.copyToClipboard(text);
   if (result.success) {
-    alert('Содержимое скопировано в буфер обмена.');
+    // alert('Содержимое скопировано в буфер обмена.');
+    showNotification('Copied', 'success');
   } else {
     console.error('Ошибка копирования:', result.error);
-    alert('Не удалось скопировать содержимое.');
+    // alert('Не удалось скопировать содержимое.');
+    showNotification('Не удалось скопировать содержимое.', 'error');
   }
 }
 
@@ -59,6 +93,8 @@ async function removeContent(id) {
   try {
     const result = await window.electronAPI.deleteContent(id);
     if (result.success) {
+      // showNotification('Контент успешно удалён.', 'success');
+      showNotification('Контент успешно удалён.', 'success');
       // Перерисовываем список после удаления
       const currentFilter = filterInput.value.trim();
       if (currentFilter === '') {
@@ -70,11 +106,13 @@ async function removeContent(id) {
         displaySavedContent('content', currentFilter);
       }
     } else {
-      alert(result.message || 'Не удалось удалить контент.');
+      // alert(result.message || 'Не удалось удалить контент.');
+      showNotification(result.message || 'Не удалось удалить контент.', 'error');
     }
   } catch (error) {
     console.error('Ошибка при удалении контента:', error);
-    alert('Не удалось удалить контент.');
+    // alert('Не удалось удалить контент.');
+    showNotification('Не удалось удалить контент.', 'error');
   }
 }
 
