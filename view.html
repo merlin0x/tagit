@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Tag it!</title>
+  <style>
+    /* Общие стили */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background-color: #121212;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Верхнее поле ввода */
+    .input-container {
+      padding: 20px;
+      background-color: #1e1e1e;
+    }
+
+    .input-container input {
+      width: 100%;
+      padding: 10px;
+      font-size: 18px;
+      color: orange;
+      background-color: #333333;
+      border: none;
+      border-radius: 4px;
+    }
+
+    /* Контейнер для контента */
+    .content-container {
+      padding: 20px;
+      flex-grow: 1;
+      background-color: #1e1e1e;
+      overflow-y: auto;
+    }
+
+    /* Стилизация скроллбара */
+    /* Для WebKit-браузеров (Chrome, Safari, Edge) */
+    .content-container::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .content-container::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .content-container::-webkit-scrollbar-thumb {
+      background-color: rgba(255, 255, 255, 0.3);
+      border-radius: 3px;
+    }
+
+    .content-container::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Для Firefox */
+    .content-container {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+    }
+
+    /* Обновленный стиль для content-item */
+    .content-item {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      background-color: #2a2a2a;
+      position: relative;
+    }
+
+    .content-item pre {
+      background-color: #333333;
+      padding: 10px;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin: 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    /* Кнопка копирования в виде иконки */
+    .copy-button {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #ffffff;
+      padding: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .copy-button:hover {
+      color: #ff9800;
+    }
+
+    /* Иконка копирования (SVG) */
+    .copy-button svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    /* Метаданные */
+    .meta-info {
+      font-size: 0.7em;
+      color: #bbbbbb;
+      padding: 5px;
+    }
+
+    .tags {
+      color: #ff9800;
+    }
+
+    /* Заголовок */
+    h2 {
+      padding: 20px;
+      margin: 0;
+      background-color: #1e1e1e;
+      border-bottom: 1px solid #444;
+    }
+
+    .right-corner {
+      position: absolute;
+      bottom: 3px;
+      right: 3px;
+      font-size: 0.7em;
+    }
+
+    /* Кнопка Remove */
+    .remove-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #fbcfd5; /* Бледно-розовый цвет */
+    }
+
+    .remove-button:hover {
+      color: #ffb6c1; /* Ярче при наведении */
+    }
+  </style>
+</head>
+<body>
+  <div class="input-container">
+    <input type="text" id="filterInput" placeholder="Search">
+    <!-- Кнопки удалены -->
+  </div>
+
+  <div class="content-container" id="contentList">
+    <!-- Контент будет загружен здесь -->
+  </div>
+
+  <script>
+    const { ipcRenderer } = require('electron');
+
+const filterInput = document.getElementById('filterInput');
+filterInput.focus();
+
+// Функция отображения контента
+async function displaySavedContent(searchType = 'all', searchValue = '') {
+  const savedContent = await ipcRenderer.invoke('get-saved-content', { type: searchType, value: searchValue });
+  const contentList = document.getElementById('contentList');
+  contentList.innerHTML = ''; // Очищаем существующий контент
+
+  if (savedContent.length === 0) {
+    contentList.innerHTML = '<p>Нет сохранённого контента.</p>';
+    return;
+  }
+
+  savedContent.forEach(item => {
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'content-item';
+    contentDiv.id = `content-${item.id}`; // Уникальный ID
+
+    const date = new Date(item.date).toLocaleTimeString().slice(0,5);
+    const tags = item.tags.join(', ');
+
+    contentDiv.innerHTML = `
+      <pre>${item.content.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</pre>
+      <button class="copy-button" onclick="copyToClipboard('${item.content.replace(/'/g, "\\'")}')" aria-label="Copy">
+        <svg viewBox="0 0 24 24">
+          <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+        </svg>
+      </button>
+      <div class="right-corner">
+          <button class="remove-button" onclick="removeContent('${item.id}')" aria-label="Remove">remove</button>
+      </div>
+      <div class="meta-info">
+        
+        <div><strong>#</strong> <span class="tags">${tags}</span></div>
+      </div>
+    `;
+    contentList.appendChild(contentDiv);
+  });
+}
+
+// Функция копирования в буфер обмена
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    alert('Содержимое скопировано в буфер обмена.');
+  }).catch(err => {
+    console.error('Ошибка копирования: ', err);
+  });
+}
+
+// Функция удаления контента
+async function removeContent(id) {
+  try {
+    await ipcRenderer.invoke('delete-content', id);
+    // Перерисовываем список после удаления
+    const currentFilter = filterInput.value.trim();
+    if (currentFilter === '') {
+      displaySavedContent();
+    } else if (currentFilter.startsWith('#')) {
+      const filterTags = currentFilter.substring(1).split(',').map(tag => tag.trim()).filter(tag => tag);
+      displaySavedContent('tag', filterTags);
+    } else {
+      displaySavedContent('content', currentFilter);
+    }
+  } catch (error) {
+    console.error('Ошибка при удалении контента:', error);
+    alert('Не удалось удалить контент.');
+  }
+}
+
+// Обработчик фильтрации при вводе
+document.getElementById('filterInput').addEventListener('input', (event) => {
+  const input = event.target.value.trim();
+  if (input === '') {
+    // Если поле ввода пустое, отображаем весь контент
+    displaySavedContent();
+  } else if (input.startsWith('#')) {
+    // Поиск по тегам
+    const filterTags = input.substring(1).split(',').map(tag => tag.trim()).filter(tag => tag);
+    displaySavedContent('tag', filterTags);
+  } else {
+    // Поиск по контенту
+    displaySavedContent('content', input);
+  }
+});
+
+// Загружаем весь контент при загрузке страницы
+window.onload = () => {
+  displaySavedContent();
+};
+
+window.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') {
+    window.close();
+  }
+});
+
+  </script>
+</body>
+</html>

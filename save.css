@@ -1,0 +1,88 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #121212;
+  color: #ffffff;
+  font-family: Arial, sans-serif;
+}
+
+/* Верхнее поле ввода */
+.input-container {
+  padding: 20px;
+  background-color: #1e1e1e;
+}
+
+.input-container input {
+  width: 100%;
+  padding: 10px;
+  font-size: 18px;
+  color: orange;
+  background-color: #333333;
+  border: none;
+  border-radius: 4px;
+}
+
+/* Контейнер для кнопок */
+.speed-dial {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+  gap: 10px;
+  padding: 20px;
+  flex-grow: 1;
+  background-color: #1e1e1e;
+}
+
+/* Стили для кастомных кнопок */
+.custom-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #007bff;
+  color: #ffffff;
+  font-size: 18px;
+  border-radius: 4px;
+  cursor: pointer;
+  user-select: none;
+  padding: 10px;
+  transition: background-color 0.3s, box-shadow 0.3s;
+  position: relative;
+}
+
+.custom-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px #ff9800;
+}
+
+.custom-button:hover {
+  background-color: #0056b3;
+}
+
+.custom-button:active {
+  background-color: #004085;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+}
+
+/* Отображение тегов */
+.button-tag {
+  margin-top: 5px;
+  font-size: 14px;
+  color: #ffd700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: none; /* Скрываем по умолчанию */
+}
+
+/* Отображаем тег при достаточном размере контейнера */
+@media (min-width: 500px) { /* Настройте значение по необходимости */
+  .button-tag {
+    display: block;
+  }
+}

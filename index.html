@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clipboard Viewer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    #image {
+      max-width: 100%;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Содержимое буфера обмена</h1>
+  <p id="text-content">Текст: </p>
+  <img id="image" alt="Изображение из буфера обмена будет здесь">
+
+  <script>
+    const { ipcRenderer } = require('electron');
+
+    ipcRenderer.on('clipboard-content', (event, content) => {
+      if (typeof content === 'string') {
+        document.getElementById('text-content').innerText = content;
+      } else {
+        document.getElementById('text-content').innerText = `Текст: ${content.text}`;
+        
+        if (content.image) {
+          document.getElementById('image').src = content.image;
+        } else {
+          document.getElementById('image').src = '';
+          document.getElementById('image').alt = 'Нет изображения';
+        }
+      }
+    });
+  </script>
+</body>
+</html>

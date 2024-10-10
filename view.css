@@ -1,0 +1,82 @@
+/* Основные стили для контейнера кнопок */
+.speed-dial {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 20px;
+  justify-content: center;
+}
+
+/* Стили для кнопки */
+.button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  background-color: #007bff;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.3s, transform 0.1s;
+  outline: none;
+}
+
+.button:focus {
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+
+.button:active {
+  transform: scale(0.95);
+}
+
+/* Стили для ключа */
+.button-key {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+/* Стили для тега */
+.button-tag {
+  font-size: 0.75em;
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  display: none; /* Скрываем тег по умолчанию */
+}
+
+/* Отображаем тег, если хватает места */
+@media (min-width: 500px) { /* Настройте значение по необходимости */
+  .button-tag {
+    display: block;
+  }
+}
+
+/* Адаптивное поведение контейнера */
+@media (max-width: 400px) {
+  .speed-dial {
+    padding: 10px;
+    gap: 5px;
+  }
+
+  .button {
+    width: 50px;
+    height: 50px;
+  }
+
+  .button-key {
+    font-size: 1.2em;
+  }
+
+  .button-tag {
+    font-size: 0.7em;
+  }
+}
