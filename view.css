@@ -1,82 +1,147 @@
-/* Основные стили для контейнера кнопок */
-.speed-dial {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  padding: 20px;
-  justify-content: center;
+* {
+  box-sizing: border-box;
 }
 
-/* Стили для кнопки */
-.button {
+body {
+  margin: 0;
   display: flex;
   flex-direction: column;
+  height: 100vh;
+  background-color: #121212;
+  color: #ffffff;
+  font-family: Arial, sans-serif;
+}
+
+/* Верхнее поле ввода */
+.input-container {
+  padding: 20px;
+  background-color: #1e1e1e;
+}
+
+.input-container input {
+  width: 100%;
+  padding: 10px;
+  font-size: 18px;
+  color: orange;
+  background-color: #333333;
+  border: none;
+  border-radius: 4px;
+}
+
+/* Контейнер для контента */
+.content-container {
+  padding: 20px;
+  flex-grow: 1;
+  background-color: #1e1e1e;
+  overflow-y: auto;
+}
+
+/* Стилизация скроллбара */
+/* Для WebKit-браузеров (Chrome, Safari, Edge) */
+.content-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.content-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.content-container::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.content-container::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Для Firefox */
+.content-container {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+/* Обновленный стиль для content-item */
+.content-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  background-color: #2a2a2a;
+  position: relative;
+}
+
+.content-item pre {
+  background-color: #333333;
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Кнопка копирования в виде иконки */
+.copy-button {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #ffffff;
+  padding: 5px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  width: 60px;
-  height: 60px;
-  background-color: #007bff;
-  color: white;
-  border-radius: 8px;
+}
+
+.copy-button:hover {
+  color: #ff9800;
+}
+
+/* Иконка копирования (SVG) */
+.copy-button svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+/* Метаданные */
+.meta-info {
+  font-size: 0.7em;
+  color: #bbbbbb;
+  padding: 5px;
+}
+
+.tags {
+  color: #ff9800;
+}
+
+/* Заголовок */
+h2 {
+  padding: 20px;
+  margin: 0;
+  background-color: #1e1e1e;
+  border-bottom: 1px solid #444;
+}
+
+.right-corner {
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+  font-size: 0.7em;
+}
+
+/* Кнопка Remove */
+.remove-button {
+  background: none;
+  border: none;
   cursor: pointer;
-  user-select: none;
-  transition: background-color 0.3s, transform 0.1s;
-  outline: none;
+  color: #fbcfd5; /* Бледно-розовый цвет */
 }
 
-.button:focus {
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
-}
-
-.button:hover {
-  background-color: #0056b3;
-}
-
-.button:active {
-  transform: scale(0.95);
-}
-
-/* Стили для ключа */
-.button-key {
-  font-size: 1.5em;
-  font-weight: bold;
-}
-
-/* Стили для тега */
-.button-tag {
-  font-size: 0.75em;
-  margin-top: 4px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-  display: none; /* Скрываем тег по умолчанию */
-}
-
-/* Отображаем тег, если хватает места */
-@media (min-width: 500px) { /* Настройте значение по необходимости */
-  .button-tag {
-    display: block;
-  }
-}
-
-/* Адаптивное поведение контейнера */
-@media (max-width: 400px) {
-  .speed-dial {
-    padding: 10px;
-    gap: 5px;
-  }
-
-  .button {
-    width: 50px;
-    height: 50px;
-  }
-
-  .button-key {
-    font-size: 1.2em;
-  }
-
-  .button-tag {
-    font-size: 0.7em;
-  }
+.remove-button:hover {
+  color: #ffb6c1; /* Ярче при наведении */
 }
