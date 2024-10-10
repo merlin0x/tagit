@@ -50,8 +50,9 @@ function createViewWindow() {
     frame: false,
     backgroundColor: '#121212',
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
+      preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: false,
+      contextIsolation: true,
       autoHideMenuBar: true
     },    
   });
@@ -180,6 +181,16 @@ ipcMain.handle('get-tags', async (event) => {
   } catch (error) {
     console.error('Error by getting tags:', error);
     return [];
+  }
+});
+
+ipcMain.handle('copy-to-clipboard', async (event, text) => {
+  try {
+    clipboard.writeText(text);
+    return { success: true };
+  } catch (error) {
+    console.error('Ошибка копирования в буфер обмена:', error);
+    return { success: false, error: error.message };
   }
 });
 
