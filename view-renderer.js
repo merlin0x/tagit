@@ -1,8 +1,3 @@
-// view-renderer.js
-
-// Удалите следующую строку, так как nodeIntegration отключен
-// const { ipcRenderer } = require('electron');
-
 const filterInput = document.getElementById('filterInput');
 filterInput.focus();
 
@@ -80,11 +75,10 @@ async function copyToClipboard(text) {
   const result = await window.electronAPI.copyToClipboard(text);
   if (result.success) {
     // alert('Содержимое скопировано в буфер обмена.');
-    showNotification('Copied', 'success');
+    showNotification('Copied.', 'success');
   } else {
-    console.error('Ошибка копирования:', result.error);
-    // alert('Не удалось скопировать содержимое.');
-    showNotification('Не удалось скопировать содержимое.', 'error');
+    console.error('Failed to copy the contents.', result.error);
+    showNotification('Failed to copy the contents.', 'error');
   }
 }
 
@@ -93,8 +87,7 @@ async function removeContent(id) {
   try {
     const result = await window.electronAPI.deleteContent(id);
     if (result.success) {
-      // showNotification('Контент успешно удалён.', 'success');
-      showNotification('Контент успешно удалён.', 'success');
+      showNotification('The content has been successfully removed.', 'success');
       // Перерисовываем список после удаления
       const currentFilter = filterInput.value.trim();
       if (currentFilter === '') {
@@ -106,13 +99,11 @@ async function removeContent(id) {
         displaySavedContent('content', currentFilter);
       }
     } else {
-      // alert(result.message || 'Не удалось удалить контент.');
-      showNotification(result.message || 'Не удалось удалить контент.', 'error');
+      showNotification(result.message || 'Failed to delete content.', 'error');
     }
   } catch (error) {
-    console.error('Ошибка при удалении контента:', error);
-    // alert('Не удалось удалить контент.');
-    showNotification('Не удалось удалить контент.', 'error');
+    console.error('Failed to delete content:', error);
+    showNotification('Failed to delete content.', 'error');
   }
 }
 
