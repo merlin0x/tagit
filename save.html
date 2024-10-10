@@ -85,18 +85,25 @@
 
     // Обработка нажатий клавиш
     window.addEventListener('keydown', (event) => {
+
+      const inputField = document.getElementById('input-field');
+
       // Проверка нажатия '#'
       if (event.key === '#') {
         event.preventDefault(); // Предотвращаем стандартное поведение
-        const inputField = document.getElementById('input-field');
         inputField.focus(); // Перемещаем фокус на поле ввода
-        insertAtCursor(inputField, '#'); // Вставляем '#'
+
+        if (inputField.value.length === 0) {
+          insertAtCursor(inputField, '#'); // Вставляем '#'
+        }
         return; // Прерываем дальнейшую обработку
       }
 
-      // Обработка шорткатов Alt+<key>
-      if (!event.ctrlKey) {
-        const key = event.code.replace('Key', '').toLowerCase(); // Используем event.code для игнорирования раскладки и CapsLock
+      
+      const isInputFocused = (document.activeElement === inputField);
+
+      if (!event.ctrlKey && !isInputFocused) {
+        const key = event.code.replace('Key', '').toLowerCase();
         const button = document.querySelector(`.custom-button[data-key="${key}"]`);
         if (button) {
           event.preventDefault();
@@ -106,7 +113,12 @@
 
       // Закрытие окна по Esc
       if (event.key === 'Escape') {
-        window.close();
+        if (isInputFocused) {
+          window.focus();
+          inputField.blur();
+        } else {
+          window.close();
+        }
       }
     });
 
