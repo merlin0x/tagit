@@ -117,7 +117,7 @@
           window.focus();
           inputField.blur();
         } else {
-          window.close();
+          ipcRenderer.invoke('close');
         }
       }
     });

@@ -152,8 +152,8 @@ window.onload = () => {
 };
 
 // Закрытие окна при нажатии клавиши Escape
-window.addEventListener('keydown', (event) => {
+window.addEventListener('keydown', async (event) => {
   if (event.key === 'Escape') {
-    window.close();
+    await window.electronAPI.hide();
   }
 });

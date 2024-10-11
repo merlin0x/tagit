@@ -12,8 +12,8 @@ let tray = null;
 // Пример данных о тегах. В реальном приложении эти данные могут поступать из базы данных или конфигурационного файла.
 const predefinedTags = [
   { key: 'a', tag: 'all' },
-  { key: 'b', tag: 'b' },
-  { key: 'c', tag: 'c' },
+  { key: 'b', tag: 'spok' },
+  { key: 'c', tag: 'todo' },
   { key: 'd', tag: 'd' },
   { key: 'e', tag: 'e' },
   { key: 'f', tag: 'f' },
@@ -102,7 +102,7 @@ ipcMain.handle('save-content', async (event, tags) => {
   const normalizedTags = Array.isArray(tags) ? tags : [tags];
   const trimmedTags = normalizedTags.map(tag => tag.trim()).filter(tag => tag);
   await saveClipboardContent(trimmedTags);
-  if (mainWindow) mainWindow.close();
+  if (mainWindow) mainWindow.hide();
 });
 
 // Обработчик для получения сохранённого контента с фильтрацией
@@ -224,21 +224,39 @@ ipcMain.handle('delete-content', async (event, id) => {
   }
 });
 
+ipcMain.handle('close', async () => {
+  mainWindow.hide();
+});
+
+ipcMain.handle('view-hide', async () => {
+  viewWindow.hide();
+});
+
+function toggleWindow(window, createHandler, toHide = true)
+{
+  if (window) {
+    if (!window.isVisible())
+      window.show();
+    else if (toHide)
+      window.hide();
+  } else {
+    createHandler();
+  }
+}
+
+
 app.whenReady().then(async () => {
   await initializeDatabase(); // Инициализируем базу данных
 
   tray = new Tray('tray-icon.png'); // Убедитесь, что иконка находится по указанному пути
   const contextMenu = Menu.buildFromTemplate([
-    { label: 'Show', click: () => {
-        if (mainWindow) {
-          mainWindow.isVisible() ? mainWindow.hide() : mainWindow.show();
-        } else {
-          createMainWindow();
-        }
+    { 
+      label: 'Show tagger', click: () => {
+        toggleWindow(mainWindow, createMainWindow, false);
       } 
     },
     { label: 'View content', click: () => {
-        createViewWindow();
+        toggleWindow(viewWindow, createViewWindow, false);
       } 
     },
     { label: 'Quit', click: () => app.quit() },
@@ -248,11 +266,11 @@ app.whenReady().then(async () => {
 
   // Регистрация глобальных горячих клавиш
   globalShortcut.register('Ctrl+Shift+{', () => {
-    createMainWindow();
+    toggleWindow(mainWindow, createMainWindow);
   });
 
   globalShortcut.register('Ctrl+Shift+}', () => {
-    createViewWindow();
+    toggleWindow(viewWindow, createViewWindow);    
   });
 
   // Предотвращаем выход приложения при закрытии всех окон
