@@ -33,8 +33,9 @@ function createMainWindow() {
     frame: false,
     backgroundColor: '#121212',
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
+      preload: path.join(__dirname, 'save-preload.js'),
+      nodeIntegration: false,
+      contextIsolation: true,
       autoHideMenuBar: true
     },
   });
@@ -50,7 +51,7 @@ function createViewWindow() {
     frame: false,
     backgroundColor: '#121212',
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, 'view-preload.js'),
       nodeIntegration: false,
       contextIsolation: true,
       autoHideMenuBar: true
@@ -224,7 +225,7 @@ ipcMain.handle('delete-content', async (event, id) => {
   }
 });
 
-ipcMain.handle('close', async () => {
+ipcMain.handle('save-hide', async () => {
   mainWindow.hide();
 });
 
