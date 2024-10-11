@@ -9,12 +9,13 @@ const { Content, Tag, initializeDatabase, tagCount } = require('./database');
 let mainWindow, viewWindow;
 let tray = null;
 
+
 // Пример данных о тегах. В реальном приложении эти данные могут поступать из базы данных или конфигурационного файла.
 const predefinedTags = [
   { key: 'a', tag: 'all' },
   { key: 'b', tag: 'spok' },
   { key: 'c', tag: 'todo' },
-  { key: 'd', tag: 'd' },
+  { key: 'd', tag: 'tagit!' },
   { key: 'e', tag: 'e' },
   { key: 'f', tag: 'f' },
   { key: 'g', tag: 'g' },
