@@ -6,7 +6,7 @@ const { v4: uuidv4 } = require('uuid');
 const { ipcMain } = require('electron');
 const { Content, Tag, initializeDatabase, tagCount, getTags } = require('./database');
 
-let mainWindow, viewWindow;
+let mainWindow, viewWindow, splashWindow;
 let tray = null;
 
 
@@ -60,6 +60,22 @@ function createViewWindow() {
   });
 
   viewWindow.loadFile('view.html');
+}
+
+function createSplashWindow() {
+  splashWindow = new BrowserWindow({
+    width: 480,
+    height: 320,
+    frame: false,
+    backgroundColor: '#121212',
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+      autoHideMenuBar: true
+    },    
+  });
+
+  splashWindow.loadFile('splash.html');
 }
 
 // Функция сохранения содержимого буфера обмена с тегами
@@ -269,6 +285,10 @@ app.whenReady().then(async () => {
   ]);
   tray.setToolTip('Tag it!');
   tray.setContextMenu(contextMenu);
+
+  createSplashWindow();
+  splashWindow.show();
+
 
   // Регистрация глобальных горячих клавиш
   globalShortcut.register('Ctrl+Shift+{', () => {
