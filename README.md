@@ -1,6 +1,6 @@
 # Tag it!
 
-Tag it! is a powerful and intuitive application designed for efficient clipboard management. It allows users to save clipboard contents instantly and organize them with customizable tags for easy retrieval and sorting. Whether you're handling code snippets, text, or images, Clipboard Tagger simplifies the process of managing and recalling data from your clipboard.
+Tag it! is a powerful and intuitive application designed for efficient clipboard management. It allows users to save clipboard contents instantly and organize them with customizable tags for easy retrieval and sorting. Whether you're handling code snippets, text, or images,  Tag it! simplifies the process of managing and recalling data from your clipboard.
 Key Features:
 
 - **Quick Tagging**: Instantly tag clipboard content using an intuitive interface with customizable tag buttons, including keyboard shortcuts for even faster tagging.
