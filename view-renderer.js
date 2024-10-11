@@ -90,14 +90,8 @@ async function removeContent(id) {
       showNotification('The content has been successfully removed.', 'success');
       // Перерисовываем список после удаления
       const currentFilter = filterInput.value.trim();
-      if (currentFilter === '') {
-        displaySavedContent();
-      } else if (currentFilter.startsWith('#')) {
-        const filterTags = currentFilter.substring(1).split(',').map(tag => tag.trim()).filter(tag => tag);
-        displaySavedContent('tag', filterTags);
-      } else {
-        displaySavedContent('content', currentFilter);
-      }
+
+      showContent(currentFilter);
     } else {
       showNotification(result.message || 'Failed to delete content.', 'error');
     }
@@ -107,20 +101,24 @@ async function removeContent(id) {
   }
 }
 
+function showContent(q) {
+    if (q === '') {
+        // Если поле ввода пустое, отображаем весь контент
+        displaySavedContent();
+      } else if (q.startsWith('#')) {
+        // Поиск по тегам
+        const filterTags = q.substring(1).split(',').map(tag => tag.trim()).filter(tag => tag);
+        displaySavedContent('tag', filterTags);
+      } else {
+        // Поиск по контенту
+        displaySavedContent('content', q);
+    }
+}
+
 // Обработчик фильтрации при вводе
 document.getElementById('filterInput').addEventListener('input', (event) => {
-  const input = event.target.value.trim();
-  if (input === '') {
-    // Если поле ввода пустое, отображаем весь контент
-    displaySavedContent();
-  } else if (input.startsWith('#')) {
-    // Поиск по тегам
-    const filterTags = input.substring(1).split(',').map(tag => tag.trim()).filter(tag => tag);
-    displaySavedContent('tag', filterTags);
-  } else {
-    // Поиск по контенту
-    displaySavedContent('content', input);
-  }
+    const input = event.target.value.trim();
+    showContent(input);
 });
 
 // Делегирование событий для кнопок
@@ -146,10 +144,12 @@ document.getElementById('contentList').addEventListener('click', async (event) =
   }
 });
 
-// Загружаем весь контент при загрузке страницы
-window.onload = () => {
-  displaySavedContent();
-};
+window.addEventListener('pageshow', () => {
+    showContent('');
+  });
+  
+  
+
 
 // Закрытие окна при нажатии клавиши Escape
 window.addEventListener('keydown', async (event) => {
