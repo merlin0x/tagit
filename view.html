@@ -4,15 +4,225 @@
 <head>
   <meta charset="UTF-8">
   <title>Tag it!</title>
-
   <link rel="stylesheet" type="text/css" href="notifications.css" />
-  <link rel="stylesheet" type="text/css" href="view.css" />
 </head>
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #121212;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+  }
+
+  /* Верхнее поле ввода */
+  .input-container {
+    padding: 10px;
+    background-color: #1e1e1e;
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+
+  .input-container input {
+    width: 100%;
+    padding: 10px 40px 10px 10px; /* Отступ справа для иконки */
+    font-size: 18px;
+    color: orange;
+    background-color: #333333;
+    border: none;
+    border-radius: 4px;
+  }
+
+  /* Кнопка сброса фильтра в виде иконки */
+  #resetFilter {
+    position: absolute;
+    right: 20px; /* Корректируем отступ */
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #ffffff;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s ease;
+  }
+
+  #resetFilter:hover {
+    color: #ff9800;
+  }
+
+  /* SVG иконка для кнопки сброса */
+  #resetFilter svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+  }
+
+  /* Контейнер для контента */
+  .content-container {
+    padding: 10px;
+    flex-grow: 1;
+    background-color: #1e1e1e;
+    overflow-y: auto;
+  }
+
+  /* Стилизация скроллбара */
+  /* Для WebKit-браузеров (Chrome, Safari, Edge) */
+  .content-container::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .content-container::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .content-container::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+  }
+
+  .content-container::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+
+  /* Для Firefox */
+  .content-container {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  }
+
+  /* Обновленный стиль для content-item */
+  .content-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    background-color: #2a2a2a;
+    position: relative;
+  }
+
+  .content-item pre {
+    background-color: #333333;
+    padding: 10px;
+    border-radius: 4px;
+    overflow-x: auto;
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  /* Кнопка копирования в виде иконки */
+  .copy-button {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #ffffff;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+  .copy-button:hover {
+    color: #ff9800;
+  }
+
+  /* Иконка копирования (SVG) */
+  .copy-button svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+  }
+
+  /* Метаданные */
+  .meta-info {
+    font-size: 0.8em;
+    color: #bbbbbb;
+    padding: 5px;
+  }
+
+  .tags {
+    color: #ff9800;
+  }
+
+  /* Заголовок */
+  h2 {
+    padding: 20px;
+    margin: 0;
+    background-color: #1e1e1e;
+    border-bottom: 1px solid #444;
+  }
+
+  .right-corner {
+    position: absolute;
+    bottom: 3px;
+    right: 3px;
+    font-size: 0.7em;
+  }
+
+  /* Кнопка Remove */
+  .remove-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #fbcfd5; /* Бледно-розовый цвет */
+  }
+
+  .remove-button:hover {
+    color: #ffb6c1; /* Ярче при наведении */
+  }
+
+  /* view.css */
+
+  /* Упрощенный стиль облака тегов */
+  .tag-cloud {
+    padding: 3px;
+    background-color: #1e1e1e;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center; /* Центрируем теги */
+  }
+
+  .tag {
+    color: #ff9800;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .tag:hover {
+    background-color: #555555;
+  }
+</style>
 
 <body>
   <div class="input-container">
     <input type="text" id="filterInput" placeholder="Search">
-    <!-- Кнопки удалены -->
+    <button id="resetFilter" aria-label="Сбросить фильтр">
+      <!-- SVG иконка сброса -->
+      <svg viewBox="0 0 24 24">
+        <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.85-.78 3.54-2 4.69L18.69 20H20V22H16V20H13.31L12 18.69V20H10V18.69L8.69 20H5V22H3V20H4.31L6.69 17.62C5.55 16.38 5 14.77 5 13c0-4.42 3.58-8 8-8z" />
+      </svg>
+    </button>
+  </div>
+
+  <div class="tag-cloud" id="tagCloud">
+    <!-- Теги будут добавлены здесь -->
   </div>
 
   <div class="content-container" id="contentList">
@@ -21,10 +231,167 @@
 
   <div id="notification-container"></div>
 
+  <script src="./notifications.js"></script>
+  <script>
+    const filterInput = document.getElementById('filterInput');
+    filterInput.focus();
+
+    function renderTagCloud(tags) {
+      const tagCloud = document.getElementById('tagCloud');
+      tagCloud.innerHTML = ''; // Очищаем текущее облако
+
+      tags.forEach(tag => {
+        const tagElement = document.createElement('span');
+        tagElement.className = 'tag';
+        tagElement.textContent = tag;
+
+        // При клике на тег фильтруем контент
+        tagElement.addEventListener('click', () => {
+          filterInput.value = `#${tag}`;
+          showContent(`#${tag}`);
+        });
+
+        tagCloud.appendChild(tagElement);
+      });
+    }
+
+    // Функция отображения контента
+    async function displaySavedContent(searchType = 'all', searchValue = '') {
+      const savedContent = await window.electronAPI.getSavedContent({ type: searchType, value: searchValue });
+      const contentList = document.getElementById('contentList');
+      contentList.innerHTML = ''; // Очищаем существующий контент
+
+      if (savedContent.length === 0) {
+        contentList.innerHTML = '<p>Нет сохранённого контента.</p>';
+        return;
+      }
+
+      savedContent.forEach(item => {
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'content-item';
+        contentDiv.id = `content-${item.id}`; // Уникальный ID
+
+        const date = new Date(item.date).toLocaleTimeString().slice(0, 5);
+        const tags = item.tags.join(', ');
+
+        contentDiv.innerHTML = `
+          <pre>${item.content.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</pre>
+          <button class="copy-button" data-content="${item.content.replace(/"/g, '&quot;')}" aria-label="Copy">
+            <svg viewBox="0 0 24 24">
+              <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+            </svg>
+          </button>
+          <div class="right-corner">
+            <button class="remove-button" data-id="${item.id}" aria-label="Remove">remove</button>
+          </div>
+          <div class="meta-info">
+            <div><strong>#</strong> <span class="tags">${tags}</span></div>
+          </div>
+        `;
+        contentList.appendChild(contentDiv);
+      });
+    }
+
+    // Функция копирования в буфер обмена
+    async function copyToClipboard(text) {
+      const result = await window.electronAPI.copyToClipboard(text);
+      if (result.success) {
+        // alert('Содержимое скопировано в буфер обмена.');
+        showNotification('Скопировано.', 'success');
+      } else {
+        console.error('Не удалось скопировать содержимое.', result.error);
+        showNotification('Не удалось скопировать содержимое.', 'error');
+      }
+    }
+
+    // Функция удаления контента
+    async function removeContent(id) {
+      try {
+        const result = await window.electronAPI.deleteContent(id);
+        if (result.success) {
+          showNotification('Контент успешно удален.', 'success');
+          // Перерисовываем список после удаления
+          const currentFilter = filterInput.value.trim();
+
+          showContent(currentFilter);
+        } else {
+          showNotification(result.message || 'Не удалось удалить контент.', 'error');
+        }
+      } catch (error) {
+        console.error('Не удалось удалить контент:', error);
+        showNotification('Не удалось удалить контент.', 'error');
+      }
+    }
+
+    async function showContent(q) {
+      if (q === '') {
+        // Если поле ввода пустое, отображаем весь контент
+        displaySavedContent();
+      } else if (q.startsWith('#')) {
+        // Поиск по тегам
+        const filterTags = q.substring(1).split(',').map(tag => tag.trim()).filter(tag => tag);
+        displaySavedContent('tag', filterTags);
+      } else {
+        // Поиск по контенту
+        displaySavedContent('content', q);
+      }
+
+      const tags = await window.electronAPI.getTags()
+      renderTagCloud(tags.map(x => x.name));
+    }
+
+    // Обработчик фильтрации при вводе
+    document.getElementById('filterInput').addEventListener('input', (event) => {
+      const input = event.target.value.trim();
+      showContent(input);
+    });
+
+    document.getElementById('resetFilter').addEventListener('click', () => {
+      filterInput.value = '';
+      showContent('');
+    });
+
+    // Делегирование событий для кнопок
+    document.getElementById('contentList').addEventListener('click', async (event) => {
+      const target = event.target;
+
+      // Проверяем, была ли нажата кнопка копирования
+      if (target.closest('.copy-button')) {
+        const button = target.closest('.copy-button');
+        const textToCopy = button.getAttribute('data-content');
+        if (textToCopy) {
+          await copyToClipboard(textToCopy);
+        }
+      }
+
+      // Проверяем, была ли нажата кнопка удаления
+      if (target.closest('.remove-button')) {
+        const button = target.closest('.remove-button');
+        const idToRemove = button.getAttribute('data-id');
+        if (idToRemove) {
+          await removeContent(idToRemove);
+        }
+      }
+    });
+
+    window.addEventListener('pageshow', () => {
+      showContent('');
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        showContent('');
+      }
+    });
+
+    // Закрытие окна при нажатии клавиши Escape
+    window.addEventListener('keydown', async (event) => {
+      if (event.key === 'Escape') {
+        await window.electronAPI.hide();
+      }
+    });
+  </script>
+
 </body>
-
-
-<script src="./notifications.js"></script>
-<script src="./view-renderer.js"></script>
 
 </html>

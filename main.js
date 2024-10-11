@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const { ipcMain } = require('electron');
-const { Content, Tag, initializeDatabase, tagCount } = require('./database');
+const { Content, Tag, initializeDatabase, tagCount, getTags } = require('./database');
 
 let mainWindow, viewWindow;
 let tray = null;
@@ -175,7 +175,7 @@ ipcMain.handle('get-saved-content', async (event, { type, value }) => {
 });
 
 // Обработчик для получения тегов
-ipcMain.handle('get-tags', async (event) => {
+ipcMain.handle('get-predefined-tags', async (event) => {
   try {
     // В реальном приложении теги могут храниться в базе данных
     // Здесь используем предварительно заданные теги
@@ -185,6 +185,10 @@ ipcMain.handle('get-tags', async (event) => {
     return [];
   }
 });
+
+ipcMain.handle('get-tags', async (event) => {
+  return getTags();
+})
 
 ipcMain.handle('copy-to-clipboard', async (event, text) => {
   try {
