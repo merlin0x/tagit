@@ -1,6 +1,15 @@
 # Tag it!
 
-A desktop application built with Electron, Sequelize, SQLite3, and UUID.
+Tag it! is a powerful and intuitive application designed for efficient clipboard management. It allows users to save clipboard contents instantly and organize them with customizable tags for easy retrieval and sorting. Whether you're handling code snippets, text, or images, Clipboard Tagger simplifies the process of managing and recalling data from your clipboard.
+Key Features:
+
+- **Quick Tagging**: Instantly tag clipboard content using an intuitive interface with customizable tag buttons, including keyboard shortcuts for even faster tagging.
+- **Customizable Tags**: Create, edit, and organize tags on the fly, ensuring your system evolves with your needs.
+- **Advanced Search**: Filter and search saved clipboard entries using single or multiple tags, making it easy to find exactly what you're looking for.
+- **Content Types**: Supports both text and images, ensuring that all types of clipboard content can be managed in one place.
+- **Seamless Management**: Easily view, edit, and remove clipboard entries, with options to preview saved content directly from the interface.
+
+Tag it! is designed for professionals and everyday users alike who need to efficiently manage and recall snippets of data, without interrupting their workflow. Its clean and user-friendly interface ensures a smooth experience for managing your most important content.
 
 ## Prerequisites
 
