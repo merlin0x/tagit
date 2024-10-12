@@ -1,5 +1,5 @@
 // main.js
-const { app, BrowserWindow, globalShortcut, Tray, Menu, clipboard } = require('electron');
+const { app, BrowserWindow, globalShortcut, Tray, Menu, clipboard, shell } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
@@ -60,6 +60,21 @@ function createViewWindow() {
   });
 
   viewWindow.loadFile('view.html');
+
+  viewWindow.webContents.setWindowOpenHandler(({ url }) => {
+    // Открываем ссылку во внешнем браузере
+    shell.openExternal(url);
+    return { action: 'deny' }; // Запрещаем открытие внутри приложения
+  });
+
+  // Обработчик для навигации внутри текущего окна
+  viewWindow.webContents.on('will-navigate', (event, url) => {
+    const currentURL = viewWindow.webContents.getURL();
+    if (url !== currentURL) {
+      event.preventDefault(); // Отменяем навигацию внутри приложения
+      shell.openExternal(url); // Открываем во внешнем браузере
+    }
+  });  
 }
 
 function createSplashWindow() {

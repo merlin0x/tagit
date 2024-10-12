@@ -33,7 +33,8 @@
 
   .input-container input {
     width: 100%;
-    padding: 10px 40px 10px 10px; /* Отступ справа для иконки */
+    padding: 10px 40px 10px 10px;
+    /* Отступ справа для иконки */
     font-size: 18px;
     color: orange;
     background-color: #333333;
@@ -44,7 +45,8 @@
   /* Кнопка сброса фильтра в виде иконки */
   #resetFilter {
     position: absolute;
-    right: 20px; /* Корректируем отступ */
+    right: 20px;
+    /* Корректируем отступ */
     background: none;
     border: none;
     cursor: pointer;
@@ -123,18 +125,18 @@
 
   /* Кнопка копирования в виде иконки */
   .copy-button {
-  position: absolute;
-  top: 3px;
-  right: 3px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #ffffff;
-  padding: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #ffffff;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
   .copy-button:hover {
     color: #ff9800;
@@ -178,11 +180,13 @@
     background: none;
     border: none;
     cursor: pointer;
-    color: #fbcfd5; /* Бледно-розовый цвет */
+    color: #fbcfd5;
+    /* Бледно-розовый цвет */
   }
 
   .remove-button:hover {
-    color: #ffb6c1; /* Ярче при наведении */
+    color: #ffb6c1;
+    /* Ярче при наведении */
   }
 
   /* view.css */
@@ -194,7 +198,8 @@
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    justify-content: center; /* Центрируем теги */
+    justify-content: center;
+    /* Центрируем теги */
   }
 
   .tag {
@@ -208,6 +213,10 @@
   .tag:hover {
     background-color: #555555;
   }
+
+  .link {
+    color: #71a8ef;
+  }
 </style>
 
 <body>
@@ -216,7 +225,8 @@
     <button id="resetFilter" aria-label="Сбросить фильтр">
       <!-- SVG иконка сброса -->
       <svg viewBox="0 0 24 24">
-        <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.85-.78 3.54-2 4.69L18.69 20H20V22H16V20H13.31L12 18.69V20H10V18.69L8.69 20H5V22H3V20H4.31L6.69 17.62C5.55 16.38 5 14.77 5 13c0-4.42 3.58-8 8-8z" />
+        <path
+          d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.85-.78 3.54-2 4.69L18.69 20H20V22H16V20H13.31L12 18.69V20H10V18.69L8.69 20H5V22H3V20H4.31L6.69 17.62C5.55 16.38 5 14.77 5 13c0-4.42 3.58-8 8-8z" />
       </svg>
     </button>
   </div>
@@ -232,7 +242,22 @@
   <div id="notification-container"></div>
 
   <script src="./notifications.js"></script>
+
+  <script src="./third/linkify.min.js"></script>
+  <script src="./third/linkify-html.min.js"></script>
+
   <script>
+
+    const linkifyOptions = { defaultProtocol: "https", className: 'link' };
+    let globalContent = {};
+
+    const messages = {
+      failedToCopyContent: "Copied",
+      successefullyCopiedContent: "Failed to copy the contents",
+      failedToDeleteContent: "Failed to delete content",
+      successefullyDeletedContent: "The content has been successfully deleted"
+    }
+
     const filterInput = document.getElementById('filterInput');
     filterInput.focus();
 
@@ -271,12 +296,16 @@
         contentDiv.className = 'content-item';
         contentDiv.id = `content-${item.id}`; // Уникальный ID
 
+        globalContent[item.id] = item.content;
+
         const date = new Date(item.date).toLocaleTimeString().slice(0, 5);
         const tags = item.tags.join(', ');
 
+        const content = linkifyHtml(item.content, linkifyOptions);
+
         contentDiv.innerHTML = `
-          <pre>${item.content.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</pre>
-          <button class="copy-button" data-content="${item.content.replace(/"/g, '&quot;')}" aria-label="Copy">
+          <pre>${content}</pre>
+          <button class="copy-button" data-id="${item.id}" aria-label="Copy">
             <svg viewBox="0 0 24 24">
               <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
             </svg>
@@ -286,21 +315,20 @@
           </div>
           <div class="meta-info">
             <div><strong>#</strong> <span class="tags">${tags}</span></div>
-          </div>
-        `;
+          </div>`;
+
         contentList.appendChild(contentDiv);
       });
     }
-
+    
     // Функция копирования в буфер обмена
     async function copyToClipboard(text) {
       const result = await window.electronAPI.copyToClipboard(text);
       if (result.success) {
-        // alert('Содержимое скопировано в буфер обмена.');
-        showNotification('Скопировано.', 'success');
+        showNotification(messages.successefullyCopiedContent, 'success');
       } else {
-        console.error('Не удалось скопировать содержимое.', result.error);
-        showNotification('Не удалось скопировать содержимое.', 'error');
+        console.error(messages.failedToCopyContent, result.error);
+        showNotification(messages.failedToCopyContent, 'error');
       }
     }
 
@@ -309,17 +337,17 @@
       try {
         const result = await window.electronAPI.deleteContent(id);
         if (result.success) {
-          showNotification('Контент успешно удален.', 'success');
+          showNotification(messages.successefullyDeletedContent, 'success');
           // Перерисовываем список после удаления
           const currentFilter = filterInput.value.trim();
 
           showContent(currentFilter);
         } else {
-          showNotification(result.message || 'Не удалось удалить контент.', 'error');
+          showNotification(result.message || messages.failedToDeleteContent, 'error');
         }
       } catch (error) {
-        console.error('Не удалось удалить контент:', error);
-        showNotification('Не удалось удалить контент.', 'error');
+        console.error(messages.failedToDeleteContent, error);
+        showNotification(messages.failedToDeleteContent, 'error');
       }
     }
 
@@ -358,7 +386,8 @@
       // Проверяем, была ли нажата кнопка копирования
       if (target.closest('.copy-button')) {
         const button = target.closest('.copy-button');
-        const textToCopy = button.getAttribute('data-content');
+        const contentId = button.getAttribute('data-id');
+        const textToCopy = globalContent[contentId];
         if (textToCopy) {
           await copyToClipboard(textToCopy);
         }
@@ -367,9 +396,9 @@
       // Проверяем, была ли нажата кнопка удаления
       if (target.closest('.remove-button')) {
         const button = target.closest('.remove-button');
-        const idToRemove = button.getAttribute('data-id');
-        if (idToRemove) {
-          await removeContent(idToRemove);
+        const contentId = button.getAttribute('data-id');
+        if (contentId) {
+          await removeContent(contentId);
         }
       }
     });
