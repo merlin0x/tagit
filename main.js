@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const { ipcMain } = require('electron');
-const { Content, Tag, initializeDatabase, tagCount, getTags } = require('./database');
+const { initializeDatabase, getTags, createContent, getContentByTag, getContents, getAllContents, getContent, getOrCreateTag } = require('./database');
 
 let mainWindow, viewWindow, splashWindow;
 let tray = null;
@@ -106,11 +106,12 @@ async function saveClipboardContent(tags = []) {
 
     try {
       // Создаём или находим теги
-      const tagInstances = await Promise.all(tags.map(tag => Tag.findOrCreate({ where: { name: tag } })));
+      const tagInstances = await Promise.all(tags.map(tag => getOrCreateTag(tag)));
       const tagObjects = tagInstances.map(([tag]) => tag);
 
       // Создаём запись контента и связываем с тегами
-      const content = await Content.create({
+
+      const content = await createContent({
         id,
         fileName,
         filePath,
@@ -145,47 +146,13 @@ ipcMain.handle('get-saved-content', async (event, { type, value }) => {
 
     if (type === 'tag' && Array.isArray(value) && value.length > 0) {
       // Поиск по тегам
-      contents = await Content.findAll({
-        include: {
-          model: Tag,
-          where: {
-            name: value,
-          },
-          through: {
-            attributes: [],
-          },
-        },
-        group: ['Content.id'],
-        having: tagCount(value.length),
-        order: [['date', 'DESC']],
-      });
+      contents = await getContentByTag(value);
     } else if (type === 'content' && typeof value === 'string' && value.trim() !== '') {
       // Поиск по контенту
-      contents = await Content.findAll({
-        where: {
-          content: {
-            [require('sequelize').Op.like]: `%${value}%`,
-          },
-        },
-        include: {
-          model: Tag,
-          through: {
-            attributes: [],
-          },
-        },
-        order: [['date', 'DESC']],
-      });
+      contents = await getContents(value);
     } else {
       // Получаем весь контент без фильтрации
-      contents = await Content.findAll({
-        include: {
-          model: Tag,
-          through: {
-            attributes: [],
-          },
-        },
-        order: [['date', 'DESC']],
-      });
+      contents = await getAllContents();
     }
 
     // Формируем данные для передачи в рендерер
@@ -234,9 +201,7 @@ ipcMain.handle('copy-to-clipboard', async (event, text) => {
 ipcMain.handle('delete-content', async (event, id) => {
   try {
     // Находим запись контента по ID
-    const content = await Content.findByPk(id, {
-      include: Tag, // Если необходимо загрузить связанные теги
-    });
+    const content = await getContent(id);
 
     if (!content) {
       return { success: false, message: 'Content not found' };

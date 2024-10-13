@@ -104,12 +104,77 @@ async function getTags() {
   }
 }
 
+async function createContent(contentEntity) {
+  return await Content.create(contentEntity);
+}
+
+async function getContentByTag(value) {
+  return await Content.findAll({
+    include: {
+      model: Tag,
+      where: {
+        name: value,
+      },
+      through: {
+        attributes: [],
+      },
+    },
+    group: ['Content.id'],
+    having: tagCount(value.length),
+    order: [['date', 'DESC']],
+  });
+}
+
+async function getContents(value) {
+  return await Content.findAll({
+    where: {
+      content: {
+        [Op.like]: `%${value}%`,
+      },
+    },
+    include: {
+      model: Tag,
+      through: {
+        attributes: [],
+      },
+    },
+    order: [['date', 'DESC']],
+  })
+}
+
+async function getAllContents() {
+  return await Content.findAll({
+    include: {
+      model: Tag,
+      through: {
+        attributes: [],
+      },
+    },
+    order: [['date', 'DESC']],
+  })
+}
+
+async function getContent(id) {
+  return await Content.findByPk(id, {
+    include: Tag,
+  });
+}
+
+async function getOrCreateTag(tagEntity) {
+  return Tag.findOrCreate({ where: { name: tagEntity } });
+}
+
 
 module.exports = {
   sequelize,
   Content,
   Tag,
   initializeDatabase,
-  tagCount,
-  getTags
+  getTags,
+  createContent,
+  getContentByTag,
+  getContents,
+  getAllContents,
+  getContent,
+  getOrCreateTag
 };
