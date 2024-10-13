@@ -1,8 +1,9 @@
 // database.js
-const { Sequelize, DataTypes } = require('sequelize');
-const { Op, fn, col, where } = require('sequelize'); // Убедитесь, что Sequelize импортирован
+
+const { Sequelize, Op, fn, col, where } = require('sequelize');
 const path = require('path');
 const { app } = require('electron');
+const { defineModels } = require('./Entities');
 
 // Определяем путь к базе данных
 const sequelize = new Sequelize({
@@ -11,70 +12,34 @@ const sequelize = new Sequelize({
   logging: false, // Отключаем логирование SQL-запросов
 });
 
-// Определяем модели
 
-const Content = sequelize.define('Content', {
-  id: {
-    type: DataTypes.UUID,
-    defaultValue: Sequelize.UUIDV4,
-    primaryKey: true,
-  },
-  fileName: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  filePath: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  date: {
-    type: DataTypes.DATE,
-    allowNull: false,
-  },
-  content: {
-    type: DataTypes.TEXT,
-    allowNull: false,
-  },
-}, {
-  timestamps: false,
-});
+const { Content, Tag } = defineModels(sequelize);
 
-const Tag = sequelize.define('Tag', {
-  id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
-  },
-  name: {
-    type: DataTypes.STRING,
-    unique: true,
-    allowNull: false,
-  },
-}, {
-  timestamps: false,
-});
-
-// Определяем связь многие-ко-многим между Content и Tag
-Content.belongsToMany(Tag, { through: 'ContentTags', timestamps: false });
-Tag.belongsToMany(Content, { through: 'ContentTags', timestamps: false });
-
-// Функция для инициализации базы данных
+/**
+ * Инициализирует соединение с базой данных и синхронизирует модели.
+ */
 async function initializeDatabase() {
   try {
     await sequelize.authenticate();
-    console.log('The connection to the database is established.');
+    console.log('Соединение с базой данных установлено.');
     await sequelize.sync(); // Создаёт таблицы, если они не существуют
-    console.log('The models are synchronized.');
+    console.log('Модели синхронизированы.');
   } catch (error) {
-    console.error('Error when connecting to the database:', error);
+    console.error('Ошибка при подключении к базе данных:', error);
   }
 }
 
+/**
+ * Возвращает условие для HAVING с количеством тегов.
+ * @param {number} length - Количество тегов.
+ */
 function tagCount(length) {
-  return sequelize.literal(`COUNT(DISTINCT Tags.id) = ${length}`)
+  return sequelize.literal(`COUNT(DISTINCT Tags.id) = ${length}`);
 }
 
-
+/**
+ * Получает все теги с количеством связанного контента.
+ */
 async function getTags() {
   try {
     const tags = await Tag.findAll({
@@ -104,12 +69,20 @@ async function getTags() {
   }
 }
 
+/**
+ * Создаёт новый контент.
+ * @param {Object} contentEntity - Объект контента.
+ */
 async function createContent(contentEntity) {
-  return await Content.create(contentEntity);
+  return Content.create(contentEntity);
 }
 
+/**
+ * Получает контент по названию тега.
+ * @param {string} value - Название тега.
+ */
 async function getContentByTag(value) {
-  return await Content.findAll({
+  return Content.findAll({
     include: {
       model: Tag,
       where: {
@@ -119,14 +92,19 @@ async function getContentByTag(value) {
         attributes: [],
       },
     },
-    group: ['Content.id'],
-    having: tagCount(value.length),
+    // Если ищем по одному тегу, можно убрать group и having
+    // group: ['Content.id'],
+    // having: tagCount(1),
     order: [['date', 'DESC']],
   });
 }
 
+/**
+ * Ищет контент по содержимому.
+ * @param {string} value - Строка для поиска.
+ */
 async function getContents(value) {
-  return await Content.findAll({
+  return Content.findAll({
     where: {
       content: {
         [Op.like]: `%${value}%`,
@@ -139,11 +117,14 @@ async function getContents(value) {
       },
     },
     order: [['date', 'DESC']],
-  })
+  });
 }
 
+/**
+ * Получает все записи контента.
+ */
 async function getAllContents() {
-  return await Content.findAll({
+  return Content.findAll({
     include: {
       model: Tag,
       through: {
@@ -151,24 +132,28 @@ async function getAllContents() {
       },
     },
     order: [['date', 'DESC']],
-  })
+  });
 }
 
+/**
+ * Получает контент по первичному ключу.
+ * @param {string} id - Идентификатор контента.
+ */
 async function getContent(id) {
-  return await Content.findByPk(id, {
+  return Content.findByPk(id, {
     include: Tag,
   });
 }
 
-async function getOrCreateTag(tagEntity) {
-  return Tag.findOrCreate({ where: { name: tagEntity } });
+/**
+ * Находит или создаёт тег по названию.
+ * @param {string} tagName - Название тега.
+ */
+async function getOrCreateTag(tagName) {
+  return Tag.findOrCreate({ where: { name: tagName } });
 }
 
-
 module.exports = {
-  sequelize,
-  Content,
-  Tag,
   initializeDatabase,
   getTags,
   createContent,
