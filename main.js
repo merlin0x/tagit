@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const { ipcMain } = require('electron');
-const { initializeDatabase, getTags, createContent, getContentByTag, getContents, getAllContents, getContent, getOrCreateTag } = require('./database');
+const { initializeDatabase, createContentTag, getTags, createContent, getContentByTag, getContents, getAllContents, getContent, getOrCreateTag } = require('./database');
 
 let mainWindow, viewWindow, splashWindow;
 let tray = null;
@@ -106,11 +106,10 @@ async function saveClipboardContent(tags = []) {
 
     try {
       // Создаём или находим теги
-      const tagInstances = await Promise.all(tags.map(tag => getOrCreateTag(tag)));
+      const tagInstances = await Promise.all(tags.map(tagObj => getOrCreateTag(tagObj.tag)));
       const tagObjects = tagInstances.map(([tag]) => tag);
 
-      // Создаём запись контента и связываем с тегами
-
+      // Создаём запись контента
       const content = await createContent({
         id,
         fileName,
@@ -119,9 +118,17 @@ async function saveClipboardContent(tags = []) {
         content: clipboardContent,
       });
 
-      await content.addTags(tagObjects);
+      // Подготавливаем данные для связывания тегов с контентом, включая состояние
+      const contentTagsData = tagObjects.map((tag, index) => ({
+        tagId: tag.id,
+        contentId: content.id,
+        state: tags[index].state,
+      }));
 
-      console.log(`Saved: ${filePath} with tags: ${tags.join(', ')}`);
+      // Используем транзакцию для атомарности операции
+      await createContentTag(contentTagsData);
+
+      console.log(`Saved: ${filePath} with tags: ${tags.map(t => t.tag).join(', ')}`);
     } catch (error) {
       console.error('Error when saving content:', error);
     }
@@ -132,10 +139,21 @@ async function saveClipboardContent(tags = []) {
 
 // Обработчик сохранения контента
 ipcMain.handle('save-content', async (event, tags) => {
-  // Преобразуем теги в массив и удаляем лишние пробелы
+  // Проверяем, является ли tags массивом, если нет — превращаем в массив
   const normalizedTags = Array.isArray(tags) ? tags : [tags];
-  const trimmedTags = normalizedTags.map(tag => tag.trim()).filter(tag => tag);
+
+  // Нормализуем теги: обрезаем пробелы у имени тега и обеспечиваем наличие объекта state или устанавливаем его в null
+  const trimmedTags = normalizedTags
+    .map(tagObj => ({
+      tag: typeof tagObj.tag === 'string' ? tagObj.tag.trim() : '',
+      state: tagObj.state || null,
+    }))
+    .filter(tagObj => tagObj.tag); // Удаляем теги без имени
+
+  // Сохраняем контент с привязанными тегами и их состоянием
   await saveClipboardContent(trimmedTags);
+
+  // Скрываем главное окно, если оно существует
   if (mainWindow) mainWindow.hide();
 });
 
@@ -149,11 +167,13 @@ ipcMain.handle('get-saved-content', async (event, { type, value }) => {
       contents = await getContentByTag(value);
     } else if (type === 'content' && typeof value === 'string' && value.trim() !== '') {
       // Поиск по контенту
-      contents = await getContents(value);
+      contents = await getContents(value);      
     } else {
       // Получаем весь контент без фильтрации
       contents = await getAllContents();
     }
+
+    console.log(contents)
 
     // Формируем данные для передачи в рендерер
     const result = contents.map(content => ({
@@ -162,8 +182,15 @@ ipcMain.handle('get-saved-content', async (event, { type, value }) => {
       filePath: content.filePath,
       date: content.date,
       content: content.content,
-      tags: content.Tags.map(tag => tag.name),
+      tags: content.Tags.map(tag => { 
+        return {
+          tag: tag.name, 
+          state: tag.ContentTags.state 
+        }
+      }),
     }));
+
+    console.log(result)
 
     return result;
   } catch (error) {

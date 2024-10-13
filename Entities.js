@@ -3,11 +3,12 @@
 const { DataTypes } = require('sequelize');
 
 /**
- * Определяет и настраивает модели Content и Tag.
+ * Определяет и настраивает модели Content, Tag и ContentTags.
  * @param {Sequelize} sequelize - Экземпляр Sequelize.
- * @returns {Object} Объект с моделями Content и Tag.
+ * @returns {Object} Объект с моделями Content, Tag и ContentTags.
  */
 function defineModels(sequelize) {
+  // Определение модели Content
   const Content = sequelize.define('Content', {
     id: {
       type: DataTypes.UUID,
@@ -34,6 +35,7 @@ function defineModels(sequelize) {
     timestamps: false,
   });
 
+  // Определение модели Tag
   const Tag = sequelize.define('Tag', {
     id: {
       type: DataTypes.INTEGER,
@@ -49,11 +51,21 @@ function defineModels(sequelize) {
     timestamps: false,
   });
 
-  // Определяем связь многие-ко-многим между Content и Tag
-  Content.belongsToMany(Tag, { through: 'ContentTags', timestamps: false });
-  Tag.belongsToMany(Content, { through: 'ContentTags', timestamps: false });
+  // Определение промежуточной модели ContentTags с дополнительным полем state
+  const ContentTags = sequelize.define('ContentTags', {
+    state: {
+      type: DataTypes.JSON, // Используем JSON для хранения сериализованного объекта
+      allowNull: true,      // Поле может быть null
+    },
+  }, {
+    timestamps: false,
+  });
 
-  return { Content, Tag };
+  // Определение связи многие-ко-многим между Content и Tag через ContentTags
+  Content.belongsToMany(Tag, { through: ContentTags, foreignKey: 'contentId', otherKey: 'tagId' });
+  Tag.belongsToMany(Content, { through: ContentTags, foreignKey: 'tagId', otherKey: 'contentId' });
+
+  return { Content, Tag, ContentTags };
 }
 
 module.exports = { defineModels };

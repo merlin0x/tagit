@@ -296,10 +296,13 @@
         contentDiv.className = 'content-item';
         contentDiv.id = `content-${item.id}`; // Уникальный ID
 
-        globalContent[item.id] = item.content;
+        globalContent[item.id] = {          
+          content: item.content,
+          tags: item.tags
+        }
 
         const date = new Date(item.date).toLocaleTimeString().slice(0, 5);
-        const tags = item.tags.join(', ');
+        const tags = item.tags.map(x => `${x.tag}, ${x.state}`).join(', ');
 
         const content = linkifyHtml(item.content, linkifyOptions);
 
@@ -387,7 +390,7 @@
       if (target.closest('.copy-button')) {
         const button = target.closest('.copy-button');
         const contentId = button.getAttribute('data-id');
-        const textToCopy = globalContent[contentId];
+        const textToCopy = globalContent[contentId].content;
         if (textToCopy) {
           await copyToClipboard(textToCopy);
         }

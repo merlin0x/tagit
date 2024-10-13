@@ -13,7 +13,7 @@ const sequelize = new Sequelize({
 });
 
 
-const { Content, Tag } = defineModels(sequelize);
+const { Content, Tag, ContentTags } = defineModels(sequelize);
 
 /**
  * Инициализирует соединение с базой данных и синхронизирует модели.
@@ -29,12 +29,10 @@ async function initializeDatabase() {
   }
 }
 
-/**
- * Возвращает условие для HAVING с количеством тегов.
- * @param {number} length - Количество тегов.
- */
-function tagCount(length) {
-  return sequelize.literal(`COUNT(DISTINCT Tags.id) = ${length}`);
+async function createContentTag(contentTagsData) {
+  await sequelize.transaction(async (t) => {
+    await ContentTags.bulkCreate(contentTagsData, { transaction: t });  
+  });
 }
 
 /**
@@ -89,7 +87,7 @@ async function getContentByTag(value) {
         name: value,
       },
       through: {
-        attributes: [],
+        attributes: ['state'],
       },
     },
     // Если ищем по одному тегу, можно убрать group и having
@@ -113,7 +111,7 @@ async function getContents(value) {
     include: {
       model: Tag,
       through: {
-        attributes: [],
+        attributes: ['state'],
       },
     },
     order: [['date', 'DESC']],
@@ -128,7 +126,7 @@ async function getAllContents() {
     include: {
       model: Tag,
       through: {
-        attributes: [],
+        attributes: ['state'],
       },
     },
     order: [['date', 'DESC']],
@@ -155,6 +153,7 @@ async function getOrCreateTag(tagName) {
 
 module.exports = {
   initializeDatabase,
+  createContentTag,
   getTags,
   createContent,
   getContentByTag,

@@ -34,7 +34,10 @@ async function loadTags() {
 
         // Обработчик клика
         button.addEventListener('click', async () => {
-            await window.electronAPI.saveContent([tag.tag])
+            await window.electronAPI.saveContent([ {
+                tag: tag.tag,
+                state: null
+            }])
         });
 
         // Обработчики клавиатурных событий для навигации и активации
@@ -122,7 +125,10 @@ inputField.addEventListener('keydown', async (event) => {
         }
 
         // Отправляем тег
-        await window.electronAPI.saveContent([tag])
+        await window.electronAPI.saveContent([{
+            tag, 
+            state: null
+        }])
 
         // Очищаем поле ввода после отправки
         inputField.value = '';
