@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "electron": "^32.1.2",
+    "js-yaml": "^4.1.0",
     "sequelize": "^6.37.4",
     "sqlite3": "^5.1.7",
     "uuid": "^10.0.0"

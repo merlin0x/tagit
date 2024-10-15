@@ -3,6 +3,7 @@ const { app, BrowserWindow, globalShortcut, Tray, Menu, clipboard, shell } = req
 const fs = require('fs');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
+const yaml = require('js-yaml');
 const { ipcMain } = require('electron');
 const { initializeDatabase, createContentTag, getTags, createContent, getContentByTag, getContents, getAllContents, getContent, getOrCreateTag } = require('./database');
 
@@ -25,6 +26,22 @@ const predefinedTags = [
   { key: 'k', tag: 'k' },
   { key: 'l', tag: 'l' },
 ];
+
+function loadYaml(filename)
+{
+  try
+  {
+    const fileContents = fs.readFileSync(filename, 'utf8');
+    const content = yaml.load(fileContents);
+    return content;
+  }
+  catch(e)
+  {
+    console.error(e);
+  }
+}
+
+const Config = loadYaml('config.yaml')
 
 // Функция создания главного окна сохранения
 function createMainWindow() {
@@ -314,8 +331,11 @@ app.whenReady().then(async () => {
   tray.setToolTip('Tag it!');
   tray.setContextMenu(contextMenu);
 
-  createSplashWindow();
-  splashWindow.show();
+  if (Config && Config.showSplashScren)
+  {
+    createSplashWindow();
+    splashWindow.show();
+  }
 
 
   // Регистрация глобальных горячих клавиш
