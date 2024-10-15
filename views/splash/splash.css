@@ -1,0 +1,117 @@
+/* splash.css */
+
+/* Убедитесь, что main.css подключен перед этим файлом */
+
+/* Специфические стили для страницы приветствия */
+
+/* Переопределение стилей body для этой страницы */
+body.splash-page {
+    width: 100vw;
+    max-width: 480px;
+    max-height: 320px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 10px;
+    overflow: hidden;
+  }
+  
+  /* Заголовок приложения */
+  .app-title {
+    font-size: var(--font-size-title);
+    color: var(--color-text);
+  }
+  
+  /* Подзаголовок приложения */
+  .app-subtitle {
+    font-size: var(--font-size-subtitle);
+    margin-bottom: 25px;
+    color: var(--color-subtitle);
+  }
+  
+  /* Описание приложения */
+  .app-description {
+    font-size: var(--font-size-description);
+    max-width: 460px;
+    margin-bottom: 40px;
+    color: var(--color-description);
+  }
+  
+  /* Раздел использования */
+  .usage-section {
+    max-width: 460px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  
+  .usage-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .usage-section li {
+    font-size: var(--font-size-usage);
+    color: var(--color-usage-text);
+  }
+  
+  /* Сокращение */
+  .shortcut {
+    color: var(--color-accent);
+    font-weight: bold;
+    background: var(--color-background-secondary);
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-family: var(--font-secondary);
+    font-size: var(--font-size-shortcut);
+  }
+  
+  /* Кнопка запуска */
+  .start-button {
+    margin-top: 15px;
+    padding: 6px 12px;
+    background-color: var(--color-button);
+    color: var(--color-text);
+    border: none;
+    border-radius: 4px;
+    font-size: var(--font-size-start-button);
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+  }
+  
+  .start-button:hover {
+    background-color: var(--color-button-hover);
+  }
+  
+  /* Медиа-запросы для адаптивности */
+  @media (max-width: 480px) and (max-height: 320px) {
+    body.splash-page {
+      padding: 5px;
+    }
+    .app-title {
+      font-size: 28px; /* Если необходимо, можно добавить переменную */
+    }
+    .app-subtitle {
+      font-size: 18px;
+      margin-bottom: 25px;
+    }
+    .app-description {
+      font-size: 14px;
+      margin-bottom: 30px;
+    }
+    .usage-section li,
+    .shortcut {
+      font-size: var(--font-size-usage);
+    }
+    .start-button {
+      font-size: 15px;
+      padding: 5px 10px;
+      margin-top: 10px;
+    }
+  }
+  

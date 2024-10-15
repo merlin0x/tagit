@@ -21,9 +21,8 @@ const { Content, Tag, ContentTags } = defineModels(sequelize);
 async function initializeDatabase() {
   try {
     await sequelize.authenticate();
-    console.log('Соединение с базой данных установлено.');
     await sequelize.sync(); // Создаёт таблицы, если они не существуют
-    console.log('Модели синхронизированы.');
+    console.log('Database connected');
   } catch (error) {
     console.error('Ошибка при подключении к базе данных:', error);
   }

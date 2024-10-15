@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tag it! - Splash Screen</title>
+
+  <link rel="stylesheet" type="text/css" href="../../main.css">
+  <link rel="stylesheet" type="text/css" href="splash.css" />
+</head>
+<body class="splash-page">
+  <div>
+    <div class="app-title">TAG IT!</div>
+    <div class="app-subtitle">tag based clipboard manager</div>
+    <div class="app-description">
+      Tag it! is a powerful and intuitive clipboard manager that instantly saves and organizes content with customizable tags for easy searching and sorting.
+    </div>
+    <div class="usage-section">
+      <ul>
+        <li><span class="shortcut">Ctrl + Shift + {</span>: Tag current clipboard content.</li>
+        <li><span class="shortcut">Ctrl + Shift + }</span>: Open saved content viewer.</li>
+      </ul>
+    </div>
+    <button class="start-button" onclick="window.close()" id="closeButton">Close</button>
+  </div>
+
+  <script>
+    // Установка фокуса на кнопку после загрузки страницы
+    window.addEventListener('DOMContentLoaded', (event) => {
+      document.getElementById('closeButton').focus();
+    });
+  </script>
+</body>
+</html>

@@ -51,14 +51,14 @@ function createMainWindow() {
     frame: false,
     backgroundColor: '#121212',
     webPreferences: {
-      preload: path.join(__dirname, 'save-preload.js'),
+      preload: path.join(__dirname, './views/save/save-preload.js'),
       nodeIntegration: false,
       contextIsolation: true,
       autoHideMenuBar: true
     },
   });
 
-  mainWindow.loadFile('save.html');
+  mainWindow.loadFile('./views/save/save.html');
 }
 
 // Функция создания окна просмотра
@@ -69,14 +69,14 @@ function createViewWindow() {
     frame: false,
     backgroundColor: '#121212',
     webPreferences: {
-      preload: path.join(__dirname, 'view-preload.js'),
+      preload: path.join(__dirname, './views/view/view-preload.js'),
       nodeIntegration: false,
       contextIsolation: true,
       autoHideMenuBar: true
     },    
   });
 
-  viewWindow.loadFile('view.html');
+  viewWindow.loadFile('./views/view/view.html');
 
   viewWindow.webContents.setWindowOpenHandler(({ url }) => {
     // Открываем ссылку во внешнем браузере
@@ -107,7 +107,7 @@ function createSplashWindow() {
     },    
   });
 
-  splashWindow.loadFile('splash.html');
+  splashWindow.loadFile('./views/splash/splash.html');
 }
 
 function createSettingsWindow() {
@@ -206,8 +206,6 @@ ipcMain.handle('get-saved-content', async (event, { type, value }) => {
       contents = await getAllContents();
     }
 
-    console.log(contents)
-
     // Формируем данные для передачи в рендерер
     const result = contents.map(content => ({
       id: content.id,
@@ -222,8 +220,6 @@ ipcMain.handle('get-saved-content', async (event, { type, value }) => {
         }
       }),
     }));
-
-    console.log(result)
 
     return result;
   } catch (error) {
