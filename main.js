@@ -93,6 +93,22 @@ function createSplashWindow() {
   splashWindow.loadFile('splash.html');
 }
 
+function createSettingsWindow() {
+  settingsWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    backgroundColor: '#121212',
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+      autoHideMenuBar: true
+    },    
+  });
+
+  settingsWindow.loadFile('./views/settings/settings.html');
+  settingsWindow.setMenu(null);
+}
+
 // Функция сохранения содержимого буфера обмена с тегами
 async function saveClipboardContent(tags = []) {
   const clipboardContent = clipboard.readText();
@@ -288,6 +304,11 @@ app.whenReady().then(async () => {
         toggleWindow(viewWindow, createViewWindow, false);
       } 
     },
+    { label: 'Settings', click: () => {
+      createSettingsWindow();
+      settingsWindow.show();
+    } 
+  },
     { label: 'Quit', click: () => app.quit() },
   ]);
   tray.setToolTip('Tag it!');
