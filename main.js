@@ -130,7 +130,7 @@ function createSettingsWindow() {
 
   settingsWindow.loadFile('./views/settings/settings.html');
   settingsWindow.setMenu(null);
-  settingsWindow.webContents.openDevTools();
+  //settingsWindow.webContents.openDevTools();
 }
 
 // Функция сохранения содержимого буфера обмена с тегами
@@ -303,7 +303,7 @@ ipcMain.handle('view-hide', async () => {
 
 function toggleWindow(window, createHandler, toHide = true)
 {
-  if (window) {
+  if (window && !window.isDestroyed()) {
     if (!window.isVisible())
       window.show();
     else if (toHide)

@@ -6,7 +6,7 @@
     },
     frame: {
         type: 'bool',
-        value: false,
+        value: true,
         description: 'Show window caption'
     },
 }
