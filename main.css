@@ -103,13 +103,22 @@
     background-color: var(--color-background-secondary);
   }
 
-  .input-container input {
+  .input-container .primary {
     width: 100%;
     padding: 10px 40px 10px 10px; /* Отступ справа для иконки */
     font-size: var(--font-size-base);
     color: var(--color-accent);
-    background-color: var(----color-background-third);
-    border: none;
+    background-color: var(--color-background-third);
+    border: 1px;
+    border-radius: 4px;
+  }
+
+  .input-container .form {
+    width: 100%;
+    font-size: var(--font-size-small);
+    color: var(--color-text-secondary);
+    background-color: var(--color-background-third);
+    border: 1px;
     border-radius: 4px;
   }
   

@@ -7,11 +7,87 @@
 
     <link rel="stylesheet" type="text/css" href="../../main.css" />
     <link rel="stylesheet" type="text/css" href="settings.css" />
+    <style>
+        /* Стили для кнопки сохранения */
+        .save-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .save-button:hover {
+            background-color: #45a049;
+        }
+
+        /* Стили для формы настроек */
+        .settings-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding-bottom: 60px;
+            /* Чтобы не перекрывала кнопка */
+        }
+
+        .setting-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .setting-item label {
+            flex: 1;
+        }
+
+        .setting-item .input-container {
+            flex: 2;
+        }
+
+        input[type="checkbox"] {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--color-background-third);
+            ;
+            border-radius: 4px;
+            position: relative;
+            cursor: pointer;
+            background-color: var(--color-background-secondary);
+        }
+
+        input[type="checkbox"]:checked {
+            background-color: #45a049;
+            border-color: #4CAF50;
+        }
+
+        input[type="checkbox"]:checked::before {
+            content: "✔";
+            position: absolute;
+            top: -2px;
+            left: 2px;
+            font-size: 13px;
+            color: white;
+            /* Цвет галочки */
+        }
+
+        .input-container .form {
+            padding: 5px;
+        }
+
+        .input-container .form:focus-visible {
+            outline: 1px solid #45a049;
+        }
+    </style>
 </head>
 
 <body>
 
-    <!-- Sidebar -->
     <div class="sidebar">
         <ul>
             <li data-target="general" class="active">General</li>
@@ -20,63 +96,159 @@
         </ul>
     </div>
 
-    <!-- Контейнер для содержимого -->
     <div class="content-container">
         <div id="general" class="content-section active">
             <h1>General</h1>
-            <!-- Добавьте здесь ваш контент для общих настроек -->
+            <div class="settings-form" id="settings-form">
+                <!-- Динамические настройки будут здесь -->
+            </div>
+            <button class="save-button" id="save-button">Save</button>
         </div>
 
         <div id="speed-dial" class="content-section">
             <h1>Speed Dial</h1>
-            <!-- Добавьте здесь ваш контент для Speed Dial -->
         </div>
 
         <div id="about" class="content-section">
             <div class="content-itsem">
                 <h1>Tag it!</h1>
 
-                <p><strong>Tag it!</strong> — is a powerful and intuitive application designed for efficient clipboard management. It allows users to save clipboard contents instantly and organize them with customizable tags for easy retrieval and sorting. Whether you're handling code snippets, text, or images, <strong>Tag it!</strong> simplifies the process of managing and recalling data from your clipboard.</p>
-        
+                <p><strong>Tag it!</strong> — is a powerful and intuitive application designed for efficient clipboard
+                    management. It allows users to save clipboard contents instantly and organize them with customizable
+                    tags for easy retrieval and sorting. Whether you're handling code snippets, text, or images,
+                    <strong>Tag it!</strong> simplifies the process of managing and recalling data from your clipboard.
+                </p>
+
                 <h2>Key Features:</h2>
                 <div class="features">
                     <ul>
-                        <li><strong>Quick Tagging:</strong> Instantly tag clipboard content using an intuitive interface with customizable tag buttons, including keyboard shortcuts for even faster tagging.</li>
-                        <li><strong>Customizable Tags:</strong> Create, edit, and organize tags on the fly, ensuring your system evolves with your needs.</li>
-                        <li><strong>Advanced Search:</strong> Filter and search saved clipboard entries using single or multiple tags, making it easy to find exactly what you're looking for.</li>
-                        <li><strong>Content Types:</strong> Supports both text and images, ensuring that all types of clipboard content can be managed in one place.</li>
-                        <li><strong>Seamless Management:</strong> Easily view, edit, and remove clipboard entries, with options to preview saved content directly from the interface.</li>
+                        <li><strong>Quick Tagging:</strong> Instantly tag clipboard content using an intuitive interface
+                            with customizable tag buttons, including keyboard shortcuts for even faster tagging.</li>
+                        <li><strong>Customizable Tags:</strong> Create, edit, and organize tags on the fly, ensuring
+                            your system evolves with your needs.</li>
+                        <li><strong>Advanced Search:</strong> Filter and search saved clipboard entries using single or
+                            multiple tags, making it easy to find exactly what you're looking for.</li>
+                        <li><strong>Content Types:</strong> Supports both text and images, ensuring that all types of
+                            clipboard content can be managed in one place.</li>
+                        <li><strong>Seamless Management:</strong> Easily view, edit, and remove clipboard entries, with
+                            options to preview saved content directly from the interface.</li>
                     </ul>
                 </div>
-        
-                <p><strong>Tag it!</strong> is designed for professionals and everyday users alike who need to efficiently manage and recall snippets of data, without interrupting their workflow. Its clean and user-friendly interface ensures a smooth experience for managing your most important content.</p>
+
+                <p><strong>Tag it!</strong> is designed for professionals and everyday users alike who need to
+                    efficiently manage and recall snippets of data, without interrupting their workflow. Its clean and
+                    user-friendly interface ensures a smooth experience for managing your most important content.</p>
             </div>
         </div>
     </div>
 
-    <!-- Подключение Bootstrap JS и зависимостей (опционально) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Функция для переключения вкладок
         document.querySelectorAll('.sidebar li').forEach(item => {
-            item.addEventListener('click', () => {
-                // Удаляем активный класс у всех элементов
+            item.addEventListener('click', async () => {
                 document.querySelectorAll('.sidebar li').forEach(li => li.classList.remove('active'));
-                // Добавляем активный класс к выбранному элементу
                 item.classList.add('active');
 
-                // Скрываем все секции
                 document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
-                // Показываем выбранную секцию
                 const target = item.getAttribute('data-target');
-                document.getElementById(target).classList.add('active');
+                const targetSection = document.getElementById(target);
+                targetSection.classList.add('active');
+
+                if (target === 'general') {
+                    const config = await window.electronAPI.getConfig();
+                    populateGeneralSettings(config);
+                }
             });
         });
 
-        // Закрытие окна при нажатии клавиши Escape (если требуется)
         window.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {
                 window.close();
+            }
+        });
+
+        /**
+         * Функция для заполнения секции "General" на основе конфигурации
+         * @param {Object} config - Объект конфигурации
+         */
+        function populateGeneralSettings(config) {
+            const formContainer = document.getElementById('settings-form');
+            formContainer.innerHTML = ''; // Очистка предыдущих настроек
+
+            for (const key in config) {
+                if (config.hasOwnProperty(key)) {
+                    const setting = config[key];
+
+                    const settingDiv = document.createElement('div');
+                    settingDiv.classList.add('setting-item');
+
+                    const label = document.createElement('label');
+                    label.htmlFor = key;
+                    label.textContent = setting.description;
+
+                    const inputContainer = document.createElement('div')
+                    inputContainer.classList.add('input-container')
+
+                    let input;
+                    if (setting.type === 'bool') {
+                        input = document.createElement('input');
+                        input.type = 'checkbox';
+                        input.id = key;
+                        input.checked = setting.value;
+                    } else {
+                        input = document.createElement('input');
+                        input.classList.add('form')
+                        input.type = 'text';
+                        input.id = key;
+                        input.value = setting.value;
+                    }
+
+                    inputContainer.appendChild(input);
+                    settingDiv.appendChild(label);
+                    settingDiv.appendChild(inputContainer);
+                    formContainer.appendChild(settingDiv);
+                }
+            }
+
+            // Добавляем обработчик для кнопки "Сохранить"
+            const saveButton = document.getElementById('save-button');
+            saveButton.onclick = () => {
+                const newConfig = {};
+
+                for (const key in config) {
+                    if (config.hasOwnProperty(key)) {
+                        const setting = config[key];
+                        const inputElement = document.getElementById(key);
+
+                        if (setting.type === 'bool') {
+                            newConfig[key] = {
+                                ...setting,
+                                value: inputElement.checked
+                            };
+                        } else {
+                            newConfig[key] = {
+                                ...setting,
+                                value: inputElement.value
+                            };
+                        }
+                    }
+                }
+
+                // Отправляем новую конфигурацию на сохранение через Electron API
+                window.electronAPI.saveConfig(newConfig).then(() => {
+                    alert('Настройки успешно сохранены!');
+                }).catch((error) => {
+                    console.error('Ошибка при сохранении настроек:', error);
+                    alert('Произошла ошибка при сохранении настроек.');
+                });
+            };
+        }
+
+        // Инициализация при загрузке страницы, если секция "General" активна
+        document.addEventListener('DOMContentLoaded', async () => {
+            const activeSection = document.querySelector('.sidebar li.active').getAttribute('data-target');
+            if (activeSection === 'general') {
+                const config = await window.electronAPI.getConfig();
+                populateGeneralSettings(config);
             }
         });
     </script>

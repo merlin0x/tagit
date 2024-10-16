@@ -9,4 +9,9 @@
         value: true,
         description: 'Show window caption'
     },
+    test: {
+        type: 'string',
+        value: 'Some content',
+        description: 'Test field'
+    },    
 }
