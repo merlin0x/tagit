@@ -1,3 +1,12 @@
 {
-    showSplashScren: false
+    showSplashScren: {
+        type: 'bool',
+        value: false,
+        description: 'Show splash screen'
+    },
+    frame: {
+        type: 'bool',
+        value: false,
+        description: 'Show window caption'
+    },
 }

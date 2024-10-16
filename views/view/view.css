@@ -5,20 +5,9 @@
 /* Верхнее поле ввода */
 .input-container {
   padding: 10px;
-  background-color: var(--color-background-secondary);
   display: flex;
   align-items: center;
   position: relative;
-}
-
-.input-container input {
-  width: 100%;
-  padding: 10px 40px 10px 10px; /* Отступ справа для иконки */
-  font-size: var(--font-size-base);
-  color: var(--color-accent);
-  background-color: #333333; /* Можно сделать переменной */
-  border: none;
-  border-radius: 4px;
 }
 
 /* Кнопка сброса фильтра в виде иконки */

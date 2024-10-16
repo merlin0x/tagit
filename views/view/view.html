@@ -207,7 +207,6 @@
       }
     });
 
-    // Закрытие окна при нажатии клавиши Escape
     window.addEventListener('keydown', async (event) => {
       if (event.key === 'Escape') {
         await window.electronAPI.hide();

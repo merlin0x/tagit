@@ -1,0 +1,61 @@
+.content-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    background-color: #2a2a2a; /* Можно также сделать переменной при необходимости */
+    padding: 10px 15px;
+}
+
+.content-item label {
+    flex: 1;
+    font-size: var(--font-size-base);
+}
+
+.content-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--color-accent);
+}
+
+.content-item input[type="text"] {
+    flex: 1;
+    padding: 8px 10px;
+    font-size: var(--font-size-base);
+    color: var(--color-text);
+    background-color: var(--color-background-third);
+    border: 1px solid var(--color-background);
+    border-radius: 4px;
+}
+
+/* Стилизация футера и кнопки "Сохранить" */
+footer {
+    background-color: var(--color-background-secondary);
+    padding: 10px 20px;
+    text-align: center;
+    border-top: 1px solid #444;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+.save-button {
+    padding: 10px 20px;
+    font-size: var(--font-size-base);
+    color: var(--color-text);
+    background-color: var(--color-button);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.save-button:hover {
+    background-color: var(--color-button-hover);
+}
+
+/* Обеспечение отступа внизу контент-контейнера, чтобы футер не перекрывал содержимое */
+.content-container {
+    padding-bottom: 60px; /* Высота футера + небольшой отступ */
+}

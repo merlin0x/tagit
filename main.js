@@ -48,7 +48,7 @@ function createMainWindow() {
   mainWindow = new BrowserWindow({
     width: 500,
     height: 260, // Увеличил высоту для отображения тегов
-    frame: false,
+    frame: Config.frame.value,
     backgroundColor: '#121212',
     webPreferences: {
       preload: path.join(__dirname, './views/save/save-preload.js'),
@@ -59,6 +59,7 @@ function createMainWindow() {
   });
 
   mainWindow.loadFile('./views/save/save.html');
+  mainWindow.setMenu(null);
 }
 
 // Функция создания окна просмотра
@@ -66,7 +67,7 @@ function createViewWindow() {
   viewWindow = new BrowserWindow({
     width: 800,
     height: 600,
-    frame: false,
+    frame: Config.frame.value,
     backgroundColor: '#121212',
     webPreferences: {
       preload: path.join(__dirname, './views/view/view-preload.js'),
@@ -77,6 +78,7 @@ function createViewWindow() {
   });
 
   viewWindow.loadFile('./views/view/view.html');
+  viewWindow.setMenu(null);
 
   viewWindow.webContents.setWindowOpenHandler(({ url }) => {
     // Открываем ссылку во внешнем браузере
@@ -98,7 +100,7 @@ function createSplashWindow() {
   splashWindow = new BrowserWindow({
     width: 480,
     height: 320,
-    frame: false,
+    frame: Config.frame.value,
     backgroundColor: '#121212',
     webPreferences: {
       nodeIntegration: true,
@@ -108,22 +110,27 @@ function createSplashWindow() {
   });
 
   splashWindow.loadFile('./views/splash/splash.html');
+  splashWindow.setMenu(null);
 }
 
 function createSettingsWindow() {
   settingsWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    frame: Config.frame.value,
     backgroundColor: '#121212',
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-      autoHideMenuBar: true
+      preload: path.join(__dirname, './views/settings/settings-preload.js'),
+      nodeIntegration: false,
+      contextIsolation: true,
+      autoHideMenuBar: true,
+      devTools: true
     },    
   });
 
   settingsWindow.loadFile('./views/settings/settings.html');
   settingsWindow.setMenu(null);
+  settingsWindow.webContents.openDevTools();
 }
 
 // Функция сохранения содержимого буфера обмена с тегами
@@ -169,6 +176,10 @@ async function saveClipboardContent(tags = []) {
     console.log("Clipboard is empty.");
   }
 }
+
+ipcMain.handle('get-config', async () => {
+  return Config;
+})
 
 // Обработчик сохранения контента
 ipcMain.handle('save-content', async (event, tags) => {
@@ -327,7 +338,7 @@ app.whenReady().then(async () => {
   tray.setToolTip('Tag it!');
   tray.setContextMenu(contextMenu);
 
-  if (Config && Config.showSplashScren)
+  if (Config && Config.showSplashScren.value)
   {
     createSplashWindow();
     splashWindow.show();

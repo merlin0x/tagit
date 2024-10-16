@@ -14,57 +14,69 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <ul>
-            <li data-page="general.html" class="active">General</li>
-            <li data-page="speed-dial.html" class="active">Speed Dial</li>
-            <li data-page="about.html">About</li>
+            <li data-target="general" class="active">General</li>
+            <li data-target="speed-dial">Speed Dial</li>
+            <li data-target="about">About</li>
         </ul>
     </div>
 
-    <div class="content-container" id="content">
+    <!-- Контейнер для содержимого -->
+    <div class="content-container">
+        <div id="general" class="content-section active">
+            <h1>General</h1>
+            <!-- Добавьте здесь ваш контент для общих настроек -->
+        </div>
+
+        <div id="speed-dial" class="content-section">
+            <h1>Speed Dial</h1>
+            <!-- Добавьте здесь ваш контент для Speed Dial -->
+        </div>
+
+        <div id="about" class="content-section">
+            <div class="content-itsem">
+                <h1>Tag it!</h1>
+
+                <p><strong>Tag it!</strong> — is a powerful and intuitive application designed for efficient clipboard management. It allows users to save clipboard contents instantly and organize them with customizable tags for easy retrieval and sorting. Whether you're handling code snippets, text, or images, <strong>Tag it!</strong> simplifies the process of managing and recalling data from your clipboard.</p>
+        
+                <h2>Key Features:</h2>
+                <div class="features">
+                    <ul>
+                        <li><strong>Quick Tagging:</strong> Instantly tag clipboard content using an intuitive interface with customizable tag buttons, including keyboard shortcuts for even faster tagging.</li>
+                        <li><strong>Customizable Tags:</strong> Create, edit, and organize tags on the fly, ensuring your system evolves with your needs.</li>
+                        <li><strong>Advanced Search:</strong> Filter and search saved clipboard entries using single or multiple tags, making it easy to find exactly what you're looking for.</li>
+                        <li><strong>Content Types:</strong> Supports both text and images, ensuring that all types of clipboard content can be managed in one place.</li>
+                        <li><strong>Seamless Management:</strong> Easily view, edit, and remove clipboard entries, with options to preview saved content directly from the interface.</li>
+                    </ul>
+                </div>
+        
+                <p><strong>Tag it!</strong> is designed for professionals and everyday users alike who need to efficiently manage and recall snippets of data, without interrupting their workflow. Its clean and user-friendly interface ensures a smooth experience for managing your most important content.</p>
+            </div>
+        </div>
     </div>
 
+    <!-- Подключение Bootstrap JS и зависимостей (опционально) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Функция для загрузки контента
-        function loadContent(page, selectedItem) {
-            fetch(page)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Сетевая ошибка');
-                    }
-                    return response.text();
-                })
-                .then(html => {
-                    document.getElementById('content').innerHTML = html;
-                    setActive(selectedItem);
-                })
-                .catch(error => {
-                    document.getElementById('content').innerHTML = '<p>Ошибка загрузки контента.</p>';
-                    console.error('Ошибка при загрузке страницы:', error);
-                });
-        }
-
-        // Функция для установки активного состояния
-        function setActive(selectedItem) {
-            document.querySelectorAll('.sidebar li').forEach(item => {
-                item.classList.remove('active');
-            });
-            selectedItem.classList.add('active');
-        }
-
-        // Добавляем обработчики событий на элементы списка sidebar
+        // Функция для переключения вкладок
         document.querySelectorAll('.sidebar li').forEach(item => {
             item.addEventListener('click', () => {
-                const page = item.getAttribute('data-page');
-                loadContent(page, item);
+                // Удаляем активный класс у всех элементов
+                document.querySelectorAll('.sidebar li').forEach(li => li.classList.remove('active'));
+                // Добавляем активный класс к выбранному элементу
+                item.classList.add('active');
+
+                // Скрываем все секции
+                document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+                // Показываем выбранную секцию
+                const target = item.getAttribute('data-target');
+                document.getElementById(target).classList.add('active');
             });
         });
 
-        // Загрузка первого контента по умолчанию
-        document.addEventListener('DOMContentLoaded', () => {
-            const activeItem = document.querySelector('.sidebar li.active');
-            if (activeItem) {
-                const page = activeItem.getAttribute('data-page');
-                loadContent(page, activeItem);
+        // Закрытие окна при нажатии клавиши Escape (если требуется)
+        window.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                window.close();
             }
         });
     </script>
