@@ -46,8 +46,11 @@
             flex: 1;
         }
 
-        .setting-item .input-container {
+        .input-container {
             flex: 2;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         input[type="checkbox"] {
@@ -55,7 +58,6 @@
             width: 18px;
             height: 18px;
             border: 2px solid var(--color-background-third);
-            ;
             border-radius: 4px;
             position: relative;
             cursor: pointer;
@@ -79,10 +81,38 @@
 
         .input-container .form {
             padding: 5px;
+            flex: 1;
         }
 
         .input-container .form:focus-visible {
             outline: 1px solid #45a049;
+        }
+
+        /* Стили для секции Speed Dial */
+        #speed-dial-form .setting-item {
+            flex-direction: row;
+            align-items: center;
+        }
+
+        #speed-dial-form .label {
+            width: 50px;
+            font-weight: bold;
+        }
+
+        #speed-dial-form .input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #speed-dial-form .input-group input {
+            width: 100px;
+        }
+
+        /* Дополнительные стили для улучшения внешнего вида */
+        .setting-item span.legend {
+            font-weight: bold;
+            width: 40px;
         }
     </style>
 </head>
@@ -108,6 +138,10 @@
 
         <div id="speed-dial" class="content-section">
             <h1>Speed Dial</h1>
+            <div class="settings-form" id="speed-dial-form">
+                <!-- Элементы Speed Dial будут динамически добавлены здесь -->
+            </div>
+            <button class="save-button" id="save-speed-dial-button">Сохранить</button>
         </div>
 
         <div id="about" class="content-section">
@@ -155,6 +189,7 @@
         }
 
         let config = {}
+        let speedDial = []
 
         document.querySelectorAll('.sidebar li').forEach(item => {
             item.addEventListener('click', async () => {
@@ -166,9 +201,14 @@
                 const targetSection = document.getElementById(target);
                 targetSection.classList.add('active');
 
+                // Получение текущей конфигурации
+                config = await window.electronAPI.getConfig();
+
+                // Вызов соответствующей функции для заполнения секции
                 if (target === 'general') {
-                    const config = await window.electronAPI.getConfig();
                     populateGeneralSettings(config);
+                } else if (target === 'speed-dial') {
+                    await populateSpeedDial(config);
                 }
             });
         });
@@ -179,10 +219,6 @@
             }
         });
 
-        /**
-         * Функция для заполнения секции "General" на основе конфигурации
-         * @param {Object} config - Объект конфигурации
-         */
         function populateGeneralSettings(config) {
             const formContainer = document.getElementById('settings-form');
             formContainer.innerHTML = ''; // Очистка предыдущих настроек
@@ -190,7 +226,6 @@
             for (const key in config) {
                 if (config.hasOwnProperty(key)) {
                     const setting = config[key];
-
                     const settingDiv = document.createElement('div');
                     settingDiv.classList.add('setting-item');
 
@@ -256,12 +291,81 @@
             };
         }
 
-        // Инициализация при загрузке страницы, если секция "General" активна
+        /**
+         * Функция для заполнения секции "Speed Dial" на основе конфигурации
+         * @param {Object} config - Объект конфигурации
+         */
+         async function populateSpeedDial(config) {
+            const formContainer = document.getElementById('speed-dial-form');
+            formContainer.innerHTML = ''; // Очистка предыдущих настроек
+
+            speedDial = await window.electronAPI.getSpeedDial();
+
+            speedDial.forEach((item, index) => {
+                const settingDiv = document.createElement('div');
+                settingDiv.classList.add('setting-item');
+
+                // Легенда "key:"
+                const keyLabel = document.createElement('span');
+                keyLabel.textContent = 'key:';
+                keyLabel.classList.add('legend');
+
+                // Поле ввода для "key"
+                const keyInput = document.createElement('input');
+                keyInput.type = 'text';
+                keyInput.value = item.key;
+                keyInput.id = `speedDial-key-${index}`;
+                keyInput.placeholder = 'Key';
+                keyInput.classList.add('form');
+
+                // Легенда "tag:"
+                const tagLabel = document.createElement('span');
+                tagLabel.textContent = 'tag:';
+                tagLabel.classList.add('legend');
+
+                // Поле ввода для "tag"
+                const tagInput = document.createElement('input');
+                tagInput.type = 'text';
+                tagInput.value = item.tag;
+                tagInput.id = `speedDial-tag-${index}`;
+                tagInput.placeholder = 'Tag';
+                tagInput.classList.add('form');
+
+                // Добавление элементов в строку
+                settingDiv.appendChild(keyLabel);
+                settingDiv.appendChild(keyInput);
+                settingDiv.appendChild(tagLabel);
+                settingDiv.appendChild(tagInput);
+                formContainer.appendChild(settingDiv);
+            });
+
+            // Добавляем обработчик для кнопки "Сохранить" в секции "Speed Dial"
+            const saveButton = document.getElementById('save-speed-dial-button');
+            saveButton.onclick = () => {
+                const newSpeedDialData = speedDial.map((item, index) => ({
+                    key: document.getElementById(`speedDial-key-${index}`).value.trim(),
+                    tag: document.getElementById(`speedDial-tag-${index}`).value.trim(),
+                }));
+
+                // Отправка новой конфигурации на сохранение через Electron API
+                window.electronAPI.saveSpeedDial(newSpeedDialData).then(() => {
+                    showNotification(messages.successefullyUpdatedSettings, 'success');
+                }).catch((error) => {
+                    console.error(messages.failedUpdateSettings, error);
+                    showNotification(messages.failedUpdateSettings, 'error');
+                });
+            };
+        }
+
+        // Инициализация при загрузке страницы, если секция "General" или "Speed Dial" активна
         document.addEventListener('DOMContentLoaded', async () => {
             const activeSection = document.querySelector('.sidebar li.active').getAttribute('data-target');
+            config = await window.electronAPI.getConfig();
+
             if (activeSection === 'general') {
-                config = await window.electronAPI.getConfig();
                 populateGeneralSettings(config);
+            } else if (activeSection === 'speed-dial') {
+                await populateSpeedDial(config);
             }
         });
     </script>

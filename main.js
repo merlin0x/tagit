@@ -11,6 +11,7 @@ let mainWindow, viewWindow, splashWindow;
 let tray = null;
 
 const ConfigFilename = "config.yaml";
+const SpeedDialFileName = "speedDial.yaml"
 
 
 // Пример данных о тегах. В реальном приложении эти данные могут поступать из базы данных или конфигурационного файла.
@@ -47,7 +48,9 @@ function saveYaml(data, filename)
 {
   try 
   {
-    const yamlStr = yaml.dump(data);
+    const yamlStr = yaml.dump(data, {
+      flowLevel: 1
+    });
     fs.writeFileSync(filename, yamlStr, 'utf8');
   }
   catch(e)
@@ -133,7 +136,6 @@ function createSettingsWindow() {
   settingsWindow = new BrowserWindow({
     width: 800,
     height: 600,
-    resizable: false,
     frame: Config.frame.value,
     backgroundColor: '#121212',
     webPreferences: {
@@ -198,10 +200,20 @@ ipcMain.handle('get-config', async () => {
   return Config;
 })
 
-ipcMain.handle('save-config', async (event, config) => {
-  Config = config;
+ipcMain.handle('save-config', async (event, data) => {
+  Config = data;
   saveYaml(Config, ConfigFilename)
 })
+
+ipcMain.handle('get-speed-dial', async () => {
+  const data = loadYaml(SpeedDialFileName)
+  return data;
+})
+
+ipcMain.handle('save-speed-dial', async (event, data) => {
+  saveYaml(data, SpeedDialFileName);
+})
+
 
 // Обработчик сохранения контента
 ipcMain.handle('save-content', async (event, tags) => {

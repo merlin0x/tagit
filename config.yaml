@@ -1,12 +1,12 @@
 showSplashScren:
   type: bool
-  value: true
   description: Show splash screen
+  value: false
 frame:
   type: bool
-  value: false
   description: Show window caption
+  value: true
 test:
   type: string
-  value: Some contentQRFDEWR
   description: Test field
+  value: Some contentQRFDEWR
