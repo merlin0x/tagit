@@ -11,6 +11,7 @@ function insertAtCursor(input, textToInsert) {
 async function loadTags() {
     const tags = await window.electronAPI.getTags();
     const speedDial = document.getElementById('speed-dial');
+    speedDial.innerHTML = '';
 
     tags.forEach((tag, index) => {
         // Создаем элемент кнопки
@@ -34,7 +35,7 @@ async function loadTags() {
 
         // Обработчик клика
         button.addEventListener('click', async () => {
-            await window.electronAPI.saveContent([ {
+            await window.electronAPI.saveContent([{
                 tag: tag.tag,
                 state: null
             }])
@@ -59,9 +60,15 @@ async function loadTags() {
     }
 }
 
-window.onload = () => {
+window.addEventListener('pageshow', () => {
     loadTags();
-};
+});
+
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+        loadTags();
+    }
+});
 
 // Обработка нажатий клавиш
 window.addEventListener('keydown', async (event) => {
@@ -126,7 +133,7 @@ inputField.addEventListener('keydown', async (event) => {
 
         // Отправляем тег
         await window.electronAPI.saveContent([{
-            tag, 
+            tag,
             state: null
         }])
 

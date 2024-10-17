@@ -113,6 +113,7 @@
         .setting-item span.legend {
             font-weight: bold;
             width: 40px;
+            text-align: center;
         }
     </style>
 </head>
@@ -141,7 +142,7 @@
             <div class="settings-form" id="speed-dial-form">
                 <!-- Элементы Speed Dial будут динамически добавлены здесь -->
             </div>
-            <button class="save-button" id="save-speed-dial-button">Сохранить</button>
+            <button class="save-button" id="save-speed-dial-button">Save</button>
         </div>
 
         <div id="about" class="content-section">
@@ -304,24 +305,12 @@
             speedDial.forEach((item, index) => {
                 const settingDiv = document.createElement('div');
                 settingDiv.classList.add('setting-item');
+                settingDiv.classList.add('input-container')                
 
-                // Легенда "key:"
-                const keyLabel = document.createElement('span');
-                keyLabel.textContent = 'key:';
-                keyLabel.classList.add('legend');
-
-                // Поле ввода для "key"
-                const keyInput = document.createElement('input');
-                keyInput.type = 'text';
-                keyInput.value = item.key;
-                keyInput.id = `speedDial-key-${index}`;
-                keyInput.placeholder = 'Key';
-                keyInput.classList.add('form');
-
-                // Легенда "tag:"
-                const tagLabel = document.createElement('span');
-                tagLabel.textContent = 'tag:';
-                tagLabel.classList.add('legend');
+                const key = document.createElement('span');
+                key.textContent = item.key;
+                key.classList.add('legend');
+                key.id = `speedDial-key-${index}`;
 
                 // Поле ввода для "tag"
                 const tagInput = document.createElement('input');
@@ -332,9 +321,7 @@
                 tagInput.classList.add('form');
 
                 // Добавление элементов в строку
-                settingDiv.appendChild(keyLabel);
-                settingDiv.appendChild(keyInput);
-                settingDiv.appendChild(tagLabel);
+                settingDiv.appendChild(key);
                 settingDiv.appendChild(tagInput);
                 formContainer.appendChild(settingDiv);
             });
@@ -343,7 +330,7 @@
             const saveButton = document.getElementById('save-speed-dial-button');
             saveButton.onclick = () => {
                 const newSpeedDialData = speedDial.map((item, index) => ({
-                    key: document.getElementById(`speedDial-key-${index}`).value.trim(),
+                    key: document.getElementById(`speedDial-key-${index}`).textContent.trim(),
                     tag: document.getElementById(`speedDial-tag-${index}`).value.trim(),
                 }));
 

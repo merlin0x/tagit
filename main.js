@@ -13,23 +13,6 @@ let tray = null;
 const ConfigFilename = "config.yaml";
 const SpeedDialFileName = "speedDial.yaml"
 
-
-// Пример данных о тегах. В реальном приложении эти данные могут поступать из базы данных или конфигурационного файла.
-const predefinedTags = [
-  { key: 'a', tag: 'all' },
-  { key: 'b', tag: 'spok' },
-  { key: 'c', tag: 'todo' },
-  { key: 'd', tag: 'tagit!' },
-  { key: 'e', tag: 'e' },
-  { key: 'f', tag: 'f' },
-  { key: 'g', tag: 'g' },
-  { key: 'h', tag: 'h' },
-  { key: 'i', tag: 'i' },
-  { key: 'j', tag: 'j' },
-  { key: 'k', tag: 'k' },
-  { key: 'l', tag: 'l' },
-];
-
 function loadYaml(filename)
 {
   try
@@ -149,7 +132,7 @@ function createSettingsWindow() {
 
   settingsWindow.loadFile('./views/settings/settings.html');
   settingsWindow.setMenu(null);
-  settingsWindow.webContents.openDevTools();
+  //settingsWindow.webContents.openDevTools();
 }
 
 // Функция сохранения содержимого буфера обмена с тегами
@@ -278,7 +261,8 @@ ipcMain.handle('get-predefined-tags', async (event) => {
   try {
     // В реальном приложении теги могут храниться в базе данных
     // Здесь используем предварительно заданные теги
-    return predefinedTags;
+    const tags = loadYaml(SpeedDialFileName);
+    return tags;
   } catch (error) {
     console.error('Error by getting tags:', error);
     return [];

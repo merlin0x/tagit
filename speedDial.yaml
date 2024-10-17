@@ -1,10 +1,10 @@
-- {key: a, tag: a}
-- {key: b, tag: b}
-- {key: c, tag: c}
-- {key: d, tag: d}
+- {key: a, tag: all}
+- {key: b, tag: tagit!}
+- {key: c, tag: spok}
+- {key: d, tag: aoo}
 - {key: e, tag: e}
 - {key: f, tag: f}
-- {key: g, tag: gddd}
+- {key: g, tag: g}
 - {key: h, tag: h}
 - {key: i, tag: i}
 - {key: j, tag: j}
