@@ -7,6 +7,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../main.css" />
     <link rel="stylesheet" type="text/css" href="settings.css" />
+    <link rel="stylesheet" type="text/css" href="../../notifications.css" />
     <style>
         /* Стили для кнопки сохранения */
         .save-button {
@@ -142,7 +143,19 @@
         </div>
     </div>
 
+    <div id="notification-container"></div>
+
+    <script src="../../notifications.js"></script>
+
     <script>
+
+        const messages = {
+            failedUpdateSettings: "Failed update settings",
+            successefullyUpdatedSettings: "Successfully updated settings",
+        }
+
+        let config = {}
+
         document.querySelectorAll('.sidebar li').forEach(item => {
             item.addEventListener('click', async () => {
                 document.querySelectorAll('.sidebar li').forEach(li => li.classList.remove('active'));
@@ -235,10 +248,10 @@
 
                 // Отправляем новую конфигурацию на сохранение через Electron API
                 window.electronAPI.saveConfig(newConfig).then(() => {
-                    alert('Настройки успешно сохранены!');
+                    showNotification(messages.successefullyUpdatedSettings, 'success');
                 }).catch((error) => {
-                    console.error('Ошибка при сохранении настроек:', error);
-                    alert('Произошла ошибка при сохранении настроек.');
+                    console.error(messages.failedUpdateSettings, error);
+                    showNotification(messages.failedUpdateSettings, 'error');
                 });
             };
         }
@@ -247,7 +260,7 @@
         document.addEventListener('DOMContentLoaded', async () => {
             const activeSection = document.querySelector('.sidebar li.active').getAttribute('data-target');
             if (activeSection === 'general') {
-                const config = await window.electronAPI.getConfig();
+                config = await window.electronAPI.getConfig();
                 populateGeneralSettings(config);
             }
         });

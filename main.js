@@ -10,6 +10,8 @@ const { initializeDatabase, createContentTag, getTags, createContent, getContent
 let mainWindow, viewWindow, splashWindow;
 let tray = null;
 
+const ConfigFilename = "config.yaml";
+
 
 // Пример данных о тегах. В реальном приложении эти данные могут поступать из базы данных или конфигурационного файла.
 const predefinedTags = [
@@ -41,7 +43,21 @@ function loadYaml(filename)
   }
 }
 
-const Config = loadYaml('config.yaml')
+function saveYaml(data, filename)
+{
+  try 
+  {
+    const yamlStr = yaml.dump(data);
+    fs.writeFileSync(filename, yamlStr, 'utf8');
+  }
+  catch(e)
+  {
+    console.error(e);
+  }
+}
+
+
+let Config = loadYaml(ConfigFilename)
 
 // Функция создания главного окна сохранения
 function createMainWindow() {
@@ -117,6 +133,7 @@ function createSettingsWindow() {
   settingsWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    resizable: false,
     frame: Config.frame.value,
     backgroundColor: '#121212',
     webPreferences: {
@@ -130,7 +147,7 @@ function createSettingsWindow() {
 
   settingsWindow.loadFile('./views/settings/settings.html');
   settingsWindow.setMenu(null);
-  //settingsWindow.webContents.openDevTools();
+  settingsWindow.webContents.openDevTools();
 }
 
 // Функция сохранения содержимого буфера обмена с тегами
@@ -179,6 +196,11 @@ async function saveClipboardContent(tags = []) {
 
 ipcMain.handle('get-config', async () => {
   return Config;
+})
+
+ipcMain.handle('save-config', async (event, config) => {
+  Config = config;
+  saveYaml(Config, ConfigFilename)
 })
 
 // Обработчик сохранения контента
