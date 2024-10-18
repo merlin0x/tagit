@@ -1,12 +1,3 @@
-showSplashScren:
-  type: bool
-  description: Show splash screen
-  value: false
-frame:
-  type: bool
-  description: Show window caption
-  value: true
-test:
-  type: string
-  description: Test field
-  value: Some contentQRFDEWR
+showSplashScren: {type: bool, description: Show splash screen, value: false}
+frame: {type: bool, description: Show window caption, value: false}
+test: {type: string, description: Test field, value: Some contentQRFDEWR}

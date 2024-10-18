@@ -6,9 +6,26 @@ const { v4: uuidv4 } = require('uuid');
 const yaml = require('js-yaml');
 const { ipcMain } = require('electron');
 const { initializeDatabase, createContentTag, getTags, createContent, getContentByTag, getContents, getAllContents, getContent, getOrCreateTag } = require('./database');
+const { createLogger, format, transports } = require('winston');
 
 let mainWindow, viewWindow, splashWindow;
 let tray = null;
+
+
+const logger = createLogger({
+  level: 'info', // Минимальный уровень логирования
+  format: format.combine(
+    format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    format.printf(info => `[${info.timestamp}] [${info.level.toUpperCase()}]: ${info.message}`)
+  ),
+  transports: [
+    // Логирование в файл
+    new transports.File({ filename: path.join(__dirname, 'app.log') }),
+    
+    // Логирование в консоль (опционально)
+    new transports.Console()
+  ],
+});
 
 const ConfigFilename = "config.yaml";
 const SpeedDialFileName = "speedDial.yaml"
@@ -23,7 +40,7 @@ function loadYaml(filename)
   }
   catch(e)
   {
-    console.error(e);
+    logger.error(e);
   }
 }
 
@@ -38,7 +55,7 @@ function saveYaml(data, filename)
   }
   catch(e)
   {
-    console.error(e);
+    logger.error(e);
   }
 }
 
@@ -170,12 +187,12 @@ async function saveClipboardContent(tags = []) {
       // Используем транзакцию для атомарности операции
       await createContentTag(contentTagsData);
 
-      console.log(`Saved: ${filePath} with tags: ${tags.map(t => t.tag).join(', ')}`);
+      logger.info(`Saved: ${filePath} with tags: ${tags.map(t => t.tag).join(', ')}`);
     } catch (error) {
-      console.error('Error when saving content:', error);
+      logger.error('Error when saving content:', error);
     }
   } else {
-    console.log("Clipboard is empty.");
+    logger.info("Clipboard is empty.");
   }
 }
 
@@ -251,7 +268,7 @@ ipcMain.handle('get-saved-content', async (event, { type, value }) => {
 
     return result;
   } catch (error) {
-    console.error('Error by getting contents:', error);
+    logger.error('Error by getting contents:', error);
     return [];
   }
 });
@@ -264,7 +281,7 @@ ipcMain.handle('get-predefined-tags', async (event) => {
     const tags = loadYaml(SpeedDialFileName);
     return tags;
   } catch (error) {
-    console.error('Error by getting tags:', error);
+    logger.error('Error by getting tags:', error);
     return [];
   }
 });
@@ -278,7 +295,7 @@ ipcMain.handle('copy-to-clipboard', async (event, text) => {
     clipboard.writeText(text);
     return { success: true };
   } catch (error) {
-    console.error('Ошибка копирования в буфер обмена:', error);
+    logger.error('Ошибка копирования в буфер обмена:', error);
     return { success: false, error: error.message };
   }
 });
@@ -295,18 +312,18 @@ ipcMain.handle('delete-content', async (event, id) => {
     // Удаляем файл из файловой системы
     if (fs.existsSync(content.filePath)) {
       fs.unlinkSync(content.filePath);
-      console.log(`File deleted: ${content.filePath}`);
+      logger.info(`File deleted: ${content.filePath}`);
     } else {
-      console.warn(`File not found: ${content.filePath}`);
+      logger.warn(`File not found: ${content.filePath}`);
     }
 
     // Удаляем запись из базы данных
     await content.destroy();
-    console.log(`Content ${id} has been deleted from db.`);
+    logger.info(`Content ${id} has been deleted from db.`);
 
     return { success: true, message: 'The content has been successfully removed.' };
   } catch (error) {
-    console.error('Error when deleting content:', error);
+    logger.error('Error when deleting content:', error);
     return { success: false, message: 'An error occurred while deleting content.' };
   }
 });
