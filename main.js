@@ -69,6 +69,7 @@ function createMainWindow() {
     height: 260, // Увеличил высоту для отображения тегов
     frame: Config.frame.value,
     backgroundColor: '#121212',
+    icon: path.join(__dirname, 'icon.png'),
     webPreferences: {
       preload: path.join(__dirname, './views/save/save-preload.js'),
       nodeIntegration: false,
@@ -90,6 +91,7 @@ function createViewWindow() {
     height: 600,
     frame: Config.frame.value,
     backgroundColor: '#121212',
+    icon: path.join(__dirname, 'icon.png'),
     webPreferences: {
       preload: path.join(__dirname, './views/view/view-preload.js'),
       nodeIntegration: false,
@@ -125,6 +127,7 @@ function createSplashWindow() {
     height: 320,
     frame: Config.frame.value,
     backgroundColor: '#121212',
+    icon: path.join(__dirname, 'icon.png'),
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
@@ -144,6 +147,7 @@ function createSettingsWindow() {
     height: 600,
     frame: Config.frame.value,
     backgroundColor: '#121212',
+    icon: path.join(__dirname, 'icon.png'),
     webPreferences: {
       preload: path.join(__dirname, './views/settings/settings-preload.js'),
       nodeIntegration: false,
@@ -372,7 +376,7 @@ function safeOpen(window, createHandler)
 app.whenReady().then(async () => {
   await initializeDatabase(); // Инициализируем базу данных
 
-  tray = new Tray('tray-icon.png'); // Убедитесь, что иконка находится по указанному пути
+  tray = new Tray('icon.png'); // Убедитесь, что иконка находится по указанному пути
   const contextMenu = Menu.buildFromTemplate([
     { 
       label: 'Show tagger', click: () => {
