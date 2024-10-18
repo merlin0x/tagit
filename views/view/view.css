@@ -38,10 +38,15 @@
 
 /* Упрощенный стиль облака тегов */
 .tag-cloud {
-  padding: 3px;
+  padding: 3px 50px 3px 50px;
   background-color: var(--color-background-secondary);
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   justify-content: center; /* Центрируем теги */
+}
+
+.input-button {
+  bottom: 0px;
+  top: 63px;
 }

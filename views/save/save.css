@@ -71,43 +71,6 @@
   display: none; /* Скрываем по умолчанию */
 }
 
-/* Стили для новой кнопки */
-.input-button {
-  position: absolute;
-  bottom: -13px;
-  right: 21px;
-  height: 30px;
-  background-color: transparent;
-  border: none;
-  border-radius: 50%;
-  color: var(--color-text-secondary);
-  font-size: 18px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: color 0.3s;
-}
-
-/* Если используете SVG внутри кнопки */
-.input-button svg {
-  width: 16px;
-  height: 16px;
-  fill: var(--color-text-secondary);
-}
-
-.input-button svg:hover {
-  width: 16px;
-  height: 16px;
-  fill: var(--color-accent-hover);
-}
-
-.input-button svg:active {
-  width: 16px;
-  height: 16px;
-  fill: var(--color-accent-active);
-}
-
 /* Отображаем тег при достаточном размере контейнера */
 @media (min-width: 500px) { /* Настройте значение по необходимости */
   .button-tag {

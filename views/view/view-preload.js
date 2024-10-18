@@ -6,4 +6,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   deleteContent: (id) => ipcRenderer.invoke('delete-content', id),
   getTags: () => ipcRenderer.invoke('get-tags'),
   hide: () => ipcRenderer.invoke('view-hide'),
+  openSettingsWindow: () => ipcRenderer.invoke('open-settings-window'),
 });
