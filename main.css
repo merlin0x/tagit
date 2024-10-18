@@ -10,6 +10,7 @@
     --color-text-secondary: #bbbbbb;
     --color-accent: #ff9800;
     --color-accent-hover: #e68a00;
+    --color-accent-active: #ff9800;
     --color-button: #007bff;
     --color-button-hover: #0056b3;
     --color-button-active: #004085;
@@ -129,7 +130,7 @@
     background: none;
     border: none;
     cursor: pointer;
-    color: var(--color-text);
+    color: var(--color-text-secondary);
     padding: 5px;
     display: flex;
     align-items: center;

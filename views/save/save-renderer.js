@@ -42,7 +42,7 @@ async function loadTags() {
         });
 
         // Обработчики клавиатурных событий для навигации и активации
-        button.addEventListener('keydown', (event) => {
+    button.addEventListener('keydown', (event) => {
             if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
                 button.click();
@@ -59,6 +59,11 @@ async function loadTags() {
         firstButton.focus();
     }
 }
+
+const settingsButton = document.getElementById('settings-button')
+settingsButton.addEventListener('click', () => {
+    window.electronAPI.openSettingsWindow();
+})
 
 window.addEventListener('pageshow', () => {
     loadTags();

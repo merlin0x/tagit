@@ -19,7 +19,7 @@ function showNotification(message, type = 'info') {
         notification.addEventListener('animationend', () => {
             notification.remove();
         });
-    }, 30000);
+    }, 750);
 
     // Обработчик для закрытия уведомления вручную
     notification.querySelector('.close-notify').addEventListener('click', () => {

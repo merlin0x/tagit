@@ -8,7 +8,7 @@ const { ipcMain } = require('electron');
 const { initializeDatabase, createContentTag, getTags, createContent, getContentByTag, getContents, getAllContents, getContent, getOrCreateTag } = require('./database');
 const { createLogger, format, transports } = require('winston');
 
-let mainWindow, viewWindow, splashWindow;
+let mainWindow, viewWindow, splashWindow, settingsWindow;
 let tray = null;
 
 
@@ -73,12 +73,14 @@ function createMainWindow() {
       preload: path.join(__dirname, './views/save/save-preload.js'),
       nodeIntegration: false,
       contextIsolation: true,
-      autoHideMenuBar: true
+      autoHideMenuBar: true,
+      devTools: true
     },
   });
 
   mainWindow.loadFile('./views/save/save.html');
   mainWindow.setMenu(null);
+  //mainWindow.webContents.openDevTools();
 }
 
 // Функция создания окна просмотра
@@ -92,12 +94,14 @@ function createViewWindow() {
       preload: path.join(__dirname, './views/view/view-preload.js'),
       nodeIntegration: false,
       contextIsolation: true,
-      autoHideMenuBar: true
+      autoHideMenuBar: true,
+      devTools: true
     },    
   });
 
   viewWindow.loadFile('./views/view/view.html');
   viewWindow.setMenu(null);
+  //viewWindow.webContents.openDevTools();
 
   viewWindow.webContents.setWindowOpenHandler(({ url }) => {
     // Открываем ссылку во внешнем браузере
@@ -124,12 +128,14 @@ function createSplashWindow() {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
-      autoHideMenuBar: true
+      autoHideMenuBar: true,
+      devTools: true
     },    
   });
 
   splashWindow.loadFile('./views/splash/splash.html');
   splashWindow.setMenu(null);
+  //splashWindow.webContents.openDevTools();
 }
 
 function createSettingsWindow() {
@@ -212,6 +218,10 @@ ipcMain.handle('get-speed-dial', async () => {
 
 ipcMain.handle('save-speed-dial', async (event, data) => {
   saveYaml(data, SpeedDialFileName);
+})
+
+ipcMain.handle('open-settings-window', async (event) => {
+  safeOpen(settingsWindow, createSettingsWindow);
 })
 
 
@@ -348,6 +358,16 @@ function toggleWindow(window, createHandler, toHide = true)
   }
 }
 
+function safeOpen(window, createHandler)
+{
+  if (window && !window.isDestroyed()) {
+    if (!window.isVisible())
+      window.show();
+  } else {
+    createHandler();
+  }
+}
+
 
 app.whenReady().then(async () => {
   await initializeDatabase(); // Инициализируем базу данных
@@ -364,8 +384,7 @@ app.whenReady().then(async () => {
       } 
     },
     { label: 'Settings', click: () => {
-      createSettingsWindow();
-      settingsWindow.show();
+      safeOpen(settingsWindow, createSettingsWindow);
     } 
   },
     { label: 'Quit', click: () => app.quit() },
