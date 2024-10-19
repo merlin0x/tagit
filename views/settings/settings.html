@@ -4,229 +4,115 @@
 <head>
     <meta charset="UTF-8">
     <title>Tag it! Settings</title>
-
-    <link rel="stylesheet" type="text/css" href="../../main.css" />
-    <link rel="stylesheet" type="text/css" href="settings.css" />
-    <link rel="stylesheet" type="text/css" href="../../notifications.css" />
-    <style>
-        /* Стили для кнопки сохранения */
-        .save-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .save-button:hover {
-            background-color: #45a049;
-        }
-
-        /* Стили для формы настроек */
-        .settings-form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            padding-bottom: 60px;
-            /* Чтобы не перекрывала кнопка */
-        }
-
-        .setting-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .setting-item label {
-            flex: 1;
-        }
-
-        .input-container {
-            flex: 2;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        input[type="checkbox"] {
-            appearance: none;
-            width: 18px;
-            height: 18px;
-            border: 2px solid var(--color-background-third);
-            border-radius: 4px;
-            position: relative;
-            cursor: pointer;
-            background-color: var(--color-background-secondary);
-        }
-
-        input[type="checkbox"]:checked {
-            background-color: #45a049;
-            border-color: #4CAF50;
-        }
-
-        input[type="checkbox"]:checked::before {
-            content: "✔";
-            position: absolute;
-            top: -2px;
-            left: 2px;
-            font-size: 13px;
-            color: white;
-            /* Цвет галочки */
-        }
-
-        .input-container .form {
-            padding: 5px;
-            flex: 1;
-        }
-
-        .input-container .form:focus-visible {
-            outline: 1px solid #45a049;
-        }
-
-        /* Стили для секции Speed Dial */
-        #speed-dial-form .setting-item {
-            flex-direction: row;
-            align-items: center;
-        }
-
-        #speed-dial-form .label {
-            width: 50px;
-            font-weight: bold;
-        }
-
-        #speed-dial-form .input-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        #speed-dial-form .input-group input {
-            width: 100px;
-        }
-
-        /* Дополнительные стили для улучшения внешнего вида */
-        .setting-item span.legend {
-            font-weight: bold;
-            width: 40px;
-            text-align: center;
-        }
-    </style>
+    <link rel="stylesheet" href="../../main.css">
+    <link rel="stylesheet" href="settings.css">
+    <link rel="stylesheet" href="../../notifications.css">
 </head>
 
 <body>
-
     <div class="sidebar">
         <ul>
             <li data-target="general" class="active">General</li>
-            <li data-target="speed-dial">Speed Dial</li>
+            <li data-target="speed-dial-section">Speed Dial</li>
             <li data-target="about">About</li>
         </ul>
     </div>
 
     <div class="content-container">
-        <div id="general" class="content-section active">
+        <section id="general" class="content-section active">
             <h1>General</h1>
             <div class="settings-form" id="settings-form">
                 <!-- Динамические настройки будут здесь -->
             </div>
             <button class="save-button" id="save-button">Save</button>
-        </div>
+        </section>
 
-        <div id="speed-dial" class="content-section">
+        <section id="speed-dial-section" class="content-section">
             <h1>Speed Dial</h1>
-            <div class="settings-form" id="speed-dial-form">
-                <!-- Элементы Speed Dial будут динамически добавлены здесь -->
+            <div id="speed-dial-content">
+                <div class="speed-dial" id="speed-dial"></div>
+                <div class="input-container">
+                    <input type="text" id="input-tag" class="primary" placeholder="#tag">
+                </div>
             </div>
             <button class="save-button" id="save-speed-dial-button">Save</button>
-        </div>
+        </section>
 
-        <div id="about" class="content-section">
-            <div class="content-itsem">
+        <section id="about" class="content-section">
+            <div class="content-item">
                 <h1>Tag it!</h1>
+                <p><strong>Tag it!</strong> — это мощное и интуитивно понятное приложение для эффективного управления буфером обмена. Оно позволяет пользователям мгновенно сохранять содержимое буфера обмена и организовывать его с помощью настраиваемых тегов для легкого поиска и сортировки. Независимо от того, работаете ли вы с фрагментами кода, текстом или изображениями, <strong>Tag it!</strong> упрощает процесс управления и воспроизведения данных из буфера обмена.</p>
 
-                <p><strong>Tag it!</strong> — is a powerful and intuitive application designed for efficient clipboard
-                    management. It allows users to save clipboard contents instantly and organize them with customizable
-                    tags for easy retrieval and sorting. Whether you're handling code snippets, text, or images,
-                    <strong>Tag it!</strong> simplifies the process of managing and recalling data from your clipboard.
-                </p>
+                <h2>Ключевые особенности:</h2>
+                <ul class="features">
+                    <li><strong>Быстрое тегирование:</strong> Мгновенно тегируйте содержимое буфера обмена с помощью интуитивного интерфейса с настраиваемыми кнопками тегов, включая горячие клавиши для ещё более быстрого тегирования.</li>
+                    <li><strong>Настраиваемые теги:</strong> Создавайте, редактируйте и организовывайте теги на ходу, обеспечивая эволюцию вашей системы в соответствии с вашими потребностями.</li>
+                    <li><strong>Расширенный поиск:</strong> Фильтруйте и ищите сохранённые записи буфера обмена, используя один или несколько тегов, что облегчает поиск именно того, что вы ищете.</li>
+                    <li><strong>Типы контента:</strong> Поддерживает как текст, так и изображения, обеспечивая управление всеми типами содержимого буфера обмена в одном месте.</li>
+                    <li><strong>Бесшовное управление:</strong> Легко просматривайте, редактируйте и удаляйте записи буфера обмена с возможностью предварительного просмотра сохранённого содержимого прямо из интерфейса.</li>
+                </ul>
 
-                <h2>Key Features:</h2>
-                <div class="features">
-                    <ul>
-                        <li><strong>Quick Tagging:</strong> Instantly tag clipboard content using an intuitive interface
-                            with customizable tag buttons, including keyboard shortcuts for even faster tagging.</li>
-                        <li><strong>Customizable Tags:</strong> Create, edit, and organize tags on the fly, ensuring
-                            your system evolves with your needs.</li>
-                        <li><strong>Advanced Search:</strong> Filter and search saved clipboard entries using single or
-                            multiple tags, making it easy to find exactly what you're looking for.</li>
-                        <li><strong>Content Types:</strong> Supports both text and images, ensuring that all types of
-                            clipboard content can be managed in one place.</li>
-                        <li><strong>Seamless Management:</strong> Easily view, edit, and remove clipboard entries, with
-                            options to preview saved content directly from the interface.</li>
-                    </ul>
-                </div>
-
-                <p><strong>Tag it!</strong> is designed for professionals and everyday users alike who need to
-                    efficiently manage and recall snippets of data, without interrupting their workflow. Its clean and
-                    user-friendly interface ensures a smooth experience for managing your most important content.</p>
+                <p><strong>Tag it!</strong> разработан для профессионалов и повседневных пользователей, которым необходимо эффективно управлять и воспроизводить фрагменты данных без прерывания рабочего процесса. Его чистый и удобный интерфейс обеспечивает плавный опыт управления вашим самым важным контентом.</p>
             </div>
-        </div>
+        </section>
     </div>
 
     <div id="notification-container"></div>
 
+    <script src="../speed-dial.js"></script>
     <script src="../../notifications.js"></script>
-
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const messages = {
+                failedUpdateSettings: "Не удалось обновить настройки",
+                successfullyUpdatedSettings: "Настройки успешно обновлены",
+            };
 
-        const messages = {
-            failedUpdateSettings: "Failed update settings",
-            successefullyUpdatedSettings: "Successfully updated settings",
-        }
+            let config = {};
+            let speedDial = [];
 
-        let config = {}
-        let speedDial = []
+            const sidebar = document.querySelector('.sidebar');
+            const saveButton = document.getElementById('save-button');
+            const saveSpeedDialBtn = document.getElementById('save-speed-dial-button');
+            const inputTag = document.getElementById('input-tag');
 
-        document.querySelectorAll('.sidebar li').forEach(item => {
-            item.addEventListener('click', async () => {
-                document.querySelectorAll('.sidebar li').forEach(li => li.classList.remove('active'));
-                item.classList.add('active');
+            // Обработчик кликов по сайдбару с использованием делегирования событий
+            sidebar.addEventListener('click', async (event) => {
+                const target = event.target.closest('li');
+                if (!target) return;
 
+                // Смена активного элемента в сайдбаре
+                sidebar.querySelectorAll('li').forEach(li => li.classList.remove('active'));
+                target.classList.add('active');
+
+                // Смена активной секции контента
                 document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
-                const target = item.getAttribute('data-target');
-                const targetSection = document.getElementById(target);
+                const targetSectionId = target.getAttribute('data-target');
+                const targetSection = document.getElementById(targetSectionId);
                 targetSection.classList.add('active');
 
-                // Получение текущей конфигурации
-                config = await window.electronAPI.getConfig();
-
-                // Вызов соответствующей функции для заполнения секции
-                if (target === 'general') {
+                // Загрузка соответствующей секции
+                if (targetSectionId === 'general') {
+                    config = await window.electronAPI.getConfig();
                     populateGeneralSettings(config);
-                } else if (target === 'speed-dial') {
-                    await populateSpeedDial(config);
+                } else if (targetSectionId === 'speed-dial-section') {
+                    await populateSpeedDial();
                 }
             });
-        });
 
-        window.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-                window.close();
-            }
-        });
+            // Закрытие окна при нажатии клавиши Escape
+            window.addEventListener('keydown', (event) => {
+                if (event.key === 'Escape') {
+                    window.close();
+                }
+            });
 
-        function populateGeneralSettings(config) {
-            const formContainer = document.getElementById('settings-form');
-            formContainer.innerHTML = ''; // Очистка предыдущих настроек
+            // Функция заполнения настроек раздела "General"
+            const populateGeneralSettings = (config) => {
+                const formContainer = document.getElementById('settings-form');
+                formContainer.innerHTML = ''; // Очистка предыдущих настроек
 
-            for (const key in config) {
-                if (config.hasOwnProperty(key)) {
-                    const setting = config[key];
+                Object.entries(config).forEach(([key, setting]) => {
                     const settingDiv = document.createElement('div');
                     settingDiv.classList.add('setting-item');
 
@@ -234,126 +120,119 @@
                     label.htmlFor = key;
                     label.textContent = setting.description;
 
-                    const inputContainer = document.createElement('div')
-                    inputContainer.classList.add('input-container')
+                    const inputContainer = document.createElement('div');
+                    inputContainer.classList.add('input-container');
 
-                    let input;
-                    if (setting.type === 'bool') {
-                        input = document.createElement('input');
-                        input.type = 'checkbox';
-                        input.id = key;
-                        input.checked = setting.value;
-                    } else {
-                        input = document.createElement('input');
-                        input.classList.add('form')
-                        input.type = 'text';
-                        input.id = key;
-                        input.value = setting.value;
-                    }
-
+                    const input = createInputElement(setting, key);
                     inputContainer.appendChild(input);
                     settingDiv.appendChild(label);
                     settingDiv.appendChild(inputContainer);
                     formContainer.appendChild(settingDiv);
-                }
-            }
+                });
 
-            // Добавляем обработчик для кнопки "Сохранить"
-            const saveButton = document.getElementById('save-button');
-            saveButton.onclick = () => {
+                // Обработчик для кнопки "Сохранить"
+                saveButton.onclick = handleSaveSettings;
+            };
+
+            // Создание элемента ввода на основе типа настройки
+            const createInputElement = (setting, key) => {
+                let input;
+                if (setting.type === 'bool') {
+                    input = document.createElement('input');
+                    input.type = 'checkbox';
+                    input.id = key;
+                    input.checked = setting.value;
+                } else {
+                    input = document.createElement('input');
+                    input.classList.add('form');
+                    input.type = 'text';
+                    input.id = key;
+                    input.value = setting.value;
+                }
+                return input;
+            };
+
+            // Обработка сохранения настроек раздела "General"
+            const handleSaveSettings = () => {
                 const newConfig = {};
 
-                for (const key in config) {
-                    if (config.hasOwnProperty(key)) {
-                        const setting = config[key];
-                        const inputElement = document.getElementById(key);
+                Object.entries(config).forEach(([key, setting]) => {
+                    const inputElement = document.getElementById(key);
+                    newConfig[key] = {
+                        ...setting,
+                        value: setting.type === 'bool' ? inputElement.checked : inputElement.value
+                    };
+                });
 
-                        if (setting.type === 'bool') {
-                            newConfig[key] = {
-                                ...setting,
-                                value: inputElement.checked
-                            };
-                        } else {
-                            newConfig[key] = {
-                                ...setting,
-                                value: inputElement.value
-                            };
-                        }
-                    }
+                window.electronAPI.saveConfig(newConfig)
+                    .then(() => {
+                        showNotification(messages.successfullyUpdatedSettings, 'success');
+                    })
+                    .catch((error) => {
+                        console.error(messages.failedUpdateSettings, error);
+                        showNotification(messages.failedUpdateSettings, 'error');
+                    });
+            };
+
+            // Обработчик сохранения Speed Dial
+            saveSpeedDialBtn.onclick = () => {
+                const key = inputTag.getAttribute('data-key');
+                const tag = inputTag.value.trim();
+
+                if (!tag) {
+                    showNotification("Тег не может быть пустым", 'error');
+                    return;
                 }
 
-                // Отправляем новую конфигурацию на сохранение через Electron API
-                window.electronAPI.saveConfig(newConfig).then(() => {
-                    showNotification(messages.successefullyUpdatedSettings, 'success');
-                }).catch((error) => {
-                    console.error(messages.failedUpdateSettings, error);
-                    showNotification(messages.failedUpdateSettings, 'error');
-                });
+                window.electronAPI.saveSpeedDial(key, tag)
+                    .then(() => {
+                        const btn = document.querySelector(`.custom-button[data-key="${key}"] .button-tag`);
+                        if (btn) btn.textContent = tag;
+                        showNotification("Speed Dial успешно сохранен", 'success');
+                    })
+                    .catch((error) => {
+                        console.error("Не удалось сохранить Speed Dial", error);
+                        showNotification("Не удалось сохранить Speed Dial", 'error');
+                    });
             };
-        }
 
-        /**
-         * Функция для заполнения секции "Speed Dial" на основе конфигурации
-         * @param {Object} config - Объект конфигурации
-         */
-         async function populateSpeedDial(config) {
-            const formContainer = document.getElementById('speed-dial-form');
-            formContainer.innerHTML = ''; // Очистка предыдущих настроек
+            // Инициализация при загрузке страницы
+            const initialize = async () => {
+                const activeSection = document.querySelector('.sidebar li.active').getAttribute('data-target');
+                config = await window.electronAPI.getConfig();
 
-            speedDial = await window.electronAPI.getSpeedDial();
-
-            speedDial.forEach((item, index) => {
-                const settingDiv = document.createElement('div');
-                settingDiv.classList.add('setting-item');
-                settingDiv.classList.add('input-container')                
-
-                const key = document.createElement('span');
-                key.textContent = item.key;
-                key.classList.add('legend');
-                key.id = `speedDial-key-${index}`;
-
-                // Поле ввода для "tag"
-                const tagInput = document.createElement('input');
-                tagInput.type = 'text';
-                tagInput.value = item.tag;
-                tagInput.id = `speedDial-tag-${index}`;
-                tagInput.placeholder = 'Tag';
-                tagInput.classList.add('form');
-
-                // Добавление элементов в строку
-                settingDiv.appendChild(key);
-                settingDiv.appendChild(tagInput);
-                formContainer.appendChild(settingDiv);
-            });
-
-            // Добавляем обработчик для кнопки "Сохранить" в секции "Speed Dial"
-            const saveButton = document.getElementById('save-speed-dial-button');
-            saveButton.onclick = () => {
-                const newSpeedDialData = speedDial.map((item, index) => ({
-                    key: document.getElementById(`speedDial-key-${index}`).textContent.trim(),
-                    tag: document.getElementById(`speedDial-tag-${index}`).value.trim(),
-                }));
-
-                // Отправка новой конфигурации на сохранение через Electron API
-                window.electronAPI.saveSpeedDial(newSpeedDialData).then(() => {
-                    showNotification(messages.successefullyUpdatedSettings, 'success');
-                }).catch((error) => {
-                    console.error(messages.failedUpdateSettings, error);
-                    showNotification(messages.failedUpdateSettings, 'error');
-                });
+                if (activeSection === 'general') {
+                    populateGeneralSettings(config);
+                } else if (activeSection === 'speed-dial-section') {
+                    await populateSpeedDial();
+                }
             };
-        }
 
-        // Инициализация при загрузке страницы, если секция "General" или "Speed Dial" активна
-        document.addEventListener('DOMContentLoaded', async () => {
-            const activeSection = document.querySelector('.sidebar li.active').getAttribute('data-target');
-            config = await window.electronAPI.getConfig();
+            // Функция заполнения Speed Dial
+            const populateSpeedDial = async () => {
+                try {
+                    speedDial = await loadTags(speedDialClickHandler);
+                    const firstButton = document.querySelector('.custom-button');
+                    if (firstButton) {
+                        const key = firstButton.getAttribute('data-key');
+                        const tag = firstButton.getAttribute('data-tag');
+                        inputTag.setAttribute('data-key', key);
+                        inputTag.value = tag;
+                    }
+                } catch (error) {
+                    console.error("Ошибка при загрузке Speed Dial", error);
+                    showNotification("Не удалось загрузить Speed Dial", 'error');
+                }
+            };
 
-            if (activeSection === 'general') {
-                populateGeneralSettings(config);
-            } else if (activeSection === 'speed-dial') {
-                await populateSpeedDial(config);
-            }
+            // Обработчик кликов по кнопкам Speed Dial
+            const speedDialClickHandler = (tag) => {
+                inputTag.setAttribute('data-key', tag.key);
+                inputTag.value = tag.tag;
+            };
+
+            // Вызов инициализации
+            initialize();
         });
     </script>
 </body>
