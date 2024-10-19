@@ -7,73 +7,27 @@ function insertAtCursor(input, textToInsert) {
     input.selectionStart = input.selectionEnd = start + textToInsert.length;
 }
 
-// Получение данных о тегах из main.js
-async function loadTags() {
-    const tags = await window.electronAPI.getTags();
-    const speedDial = document.getElementById('speed-dial');
-    speedDial.innerHTML = '';
-
-    tags.forEach((tag, index) => {
-        // Создаем элемент кнопки
-        const button = document.createElement('div');
-        button.classList.add('custom-button');
-        button.setAttribute('data-key', tag.key); // Для сопоставления с клавишами
-        button.setAttribute('data-tag', tag.tag); // Сам тег
-        button.setAttribute('tabindex', '0'); // Делает элемент фокусируемым
-
-        // Внутри кнопки: отображаемая клавиша и тег
-        const keySpan = document.createElement('span');
-        keySpan.classList.add('button-key');
-        keySpan.textContent = tag.key.toUpperCase();
-
-        const tagSpan = document.createElement('span');
-        tagSpan.classList.add('button-tag');
-        tagSpan.textContent = tag.tag;
-
-        button.appendChild(keySpan);
-        button.appendChild(tagSpan);
-
-        // Обработчик клика
-        button.addEventListener('click', async () => {
-            await window.electronAPI.saveContent([{
-                tag: tag.tag,
-                state: null
-            }])
-        });
-
-        // Обработчики клавиатурных событий для навигации и активации
-    button.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                button.click();
-            }
-        });
-
-        // Добавляем кнопку в контейнер
-        speedDial.appendChild(button);
-    });
-
-    // Устанавливаем фокус на первую кнопку, если она есть
-    const firstButton = document.querySelector('.custom-button');
-    if (firstButton) {
-        firstButton.focus();
-    }
-}
-
 const settingsButton = document.getElementById('settings-button')
 settingsButton.addEventListener('click', () => {
     window.electronAPI.openSettingsWindow();
 })
 
-window.addEventListener('pageshow', () => {
-    loadTags();
+window.addEventListener('pageshow', async () => {
+    await loadTags(speedDialClickHandler);
 });
 
-document.addEventListener('visibilitychange', () => {
+document.addEventListener('visibilitychange', async () => {
     if (!document.hidden) {
-        loadTags();
+        await loadTags(speedDialClickHandler);
     }
 });
+
+async function speedDialClickHandler(tag) {
+    await window.electronAPI.saveContent([{
+        tag: tag.tag,
+        state: null
+    }])
+}
 
 // Обработка нажатий клавиш
 window.addEventListener('keydown', async (event) => {

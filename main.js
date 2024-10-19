@@ -215,13 +215,14 @@ ipcMain.handle('save-config', async (event, data) => {
   saveYaml(Config, ConfigFilename)
 })
 
-ipcMain.handle('get-speed-dial', async () => {
-  const data = loadYaml(SpeedDialFileName)
-  return data;
-})
+ipcMain.handle('save-speed-dial', async (event, tagKey, tagValue) => {
+  let speedDialConfig = loadYaml(SpeedDialFileName);
 
-ipcMain.handle('save-speed-dial', async (event, data) => {
-  saveYaml(data, SpeedDialFileName);
+  speedDialConfig = speedDialConfig.map(item => 
+    item.key === tagKey ? {key: tagKey, tag: tagValue} : item
+  );
+
+  saveYaml(speedDialConfig, SpeedDialFileName);
 })
 
 ipcMain.handle('open-settings-window', async (event) => {
@@ -287,11 +288,8 @@ ipcMain.handle('get-saved-content', async (event, { type, value }) => {
   }
 });
 
-// Обработчик для получения тегов
-ipcMain.handle('get-predefined-tags', async (event) => {
+ipcMain.handle('get-speed-dial', async (event) => {
   try {
-    // В реальном приложении теги могут храниться в базе данных
-    // Здесь используем предварительно заданные теги
     const tags = loadYaml(SpeedDialFileName);
     return tags;
   } catch (error) {
