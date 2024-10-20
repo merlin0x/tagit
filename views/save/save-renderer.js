@@ -1,3 +1,5 @@
+// save-renderer.js
+
 // Функция для вставки символа в поле ввода
 function insertAtCursor(input, textToInsert) {
     const start = input.selectionStart;
@@ -44,7 +46,6 @@ window.addEventListener('keydown', async (event) => {
         }
         return; // Прерываем дальнейшую обработку
     }
-
 
     const isInputFocused = (document.activeElement === inputField);
 

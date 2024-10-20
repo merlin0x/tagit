@@ -142,32 +142,6 @@ p {
             gap: 5px;
         }
 
-        input[type="checkbox"] {
-            appearance: none;
-            width: 18px;
-            height: 18px;
-            border: 2px solid var(--color-background-third);
-            border-radius: 4px;
-            position: relative;
-            cursor: pointer;
-            background-color: var(--color-background-secondary);
-        }
-
-        input[type="checkbox"]:checked {
-            background-color: #45a049;
-            border-color: #4CAF50;
-        }
-
-        input[type="checkbox"]:checked::before {
-            content: "✔";
-            position: absolute;
-            top: -2px;
-            left: 2px;
-            font-size: 13px;
-            color: white;
-            /* Цвет галочки */
-        }
-
         .input-container .form {
             padding: 5px;
             flex: 1;

@@ -7,4 +7,5 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getTags: () => ipcRenderer.invoke('get-tags'),
   hide: () => ipcRenderer.invoke('view-hide'),
   openSettingsWindow: () => ipcRenderer.invoke('open-settings-window'),
+  updateTagState: (contentId, tag, state) => ipcRenderer.invoke('update-tag-state', contentId, tag, state),
 });

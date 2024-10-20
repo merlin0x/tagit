@@ -101,6 +101,38 @@
         const date = new Date(item.date).toLocaleTimeString().slice(0, 5);
         const tags = item.tags.map(x => `${x.tag}, ${x.state}`).join(', ');
 
+
+        const postprocessRedTag = (contentDiv, metaInfo) => {
+          contentDiv.style.backgroundColor = 'red'
+        }
+
+        const postprocessTodoTag = (contentDiv, metaInfo) => {
+          const checkbox = document.createElement('input');
+          checkbox.setAttribute('type', 'checkbox')
+          checkbox.style.top = '8px'
+
+          checkbox.onclick = async (event) => {
+            const contentId = event.target.parentElement.parentElement.parentElement.id;
+            const tag = event.target.parentElement.getAttribute('data-tag');
+            const state = event.target.checked;
+
+            await window.electronAPI.updateTagState(contentId, tag, state);
+          }
+
+          const metaInfoDiv = metaInfo.querySelector('div')
+          metaInfoDiv.appendChild(checkbox);
+        }
+
+        const updatedTags = item.tags.map(item => {
+          if (item.tag === 'red') {
+            return { ...item, postprocess: postprocessRedTag };
+          } else if (item.tag === 'todo') {
+            return { ...item, postprocess: postprocessTodoTag };
+          }
+
+          return item;
+        });
+
         const content = linkifyHtml(item.content, linkifyOptions);
 
         contentDiv.innerHTML = `
@@ -114,10 +146,33 @@
             <button class="remove-button" data-id="${item.id}" aria-label="Remove">remove</button>
           </div>
           <div class="meta-info">
-            <div><strong>#</strong> <span class="tags">${tags}</span></div>
           </div>`;
 
         contentList.appendChild(contentDiv);
+
+
+        // Render tags and widgets
+        const contentDivLinked = document.getElementById(contentDiv.id);
+        updatedTags.forEach((value, index) => {
+          const metaInfo = contentDivLinked.getElementsByClassName('meta-info')[0];
+          const metaInfoDiv = document.createElement('div');
+          metaInfoDiv.setAttribute('data-tag', value.tag) 
+          const metaInfoDivStrong = document.createElement('strong');
+          metaInfoDivStrong.innerHTML = '# '
+
+          const metaInfoDivSpan = document.createElement('span');
+          metaInfoDivSpan.className = 'tags'
+          metaInfoDivSpan.innerHTML = `${value.tag}`
+
+          metaInfoDiv.appendChild(metaInfoDivStrong);
+          metaInfoDiv.appendChild(metaInfoDivSpan);
+          metaInfo.appendChild(metaInfoDiv);
+
+
+          if (value.postprocess) {
+            value.postprocess(contentDivLinked, metaInfo);
+          }
+        })
       });
     }
 

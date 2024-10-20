@@ -66,7 +66,7 @@ let Config = loadYaml(ConfigFilename)
 function createMainWindow() {
   mainWindow = new BrowserWindow({
     width: 500,
-    height: 260, // Увеличил высоту для отображения тегов
+    height: 260,
     frame: Config.frame.value,
     backgroundColor: '#121212',
     icon: path.join(__dirname, 'icon.png'),
@@ -103,7 +103,7 @@ function createViewWindow() {
 
   viewWindow.loadFile('./views/view/view.html');
   viewWindow.setMenu(null);
-  //viewWindow.webContents.openDevTools();
+  viewWindow.webContents.openDevTools();
 
   viewWindow.webContents.setWindowOpenHandler(({ url }) => {
     // Открываем ссылку во внешнем браузере
@@ -348,6 +348,11 @@ ipcMain.handle('view-hide', async () => {
   viewWindow.hide();
 });
 
+ipcMain.handle('update-tag-state', async (event, contentId, tag, state) => {
+  console.log(contentId, tag, state)
+})
+
+
 function toggleWindow(window, createHandler, toHide = true)
 {
   if (window && !window.isDestroyed()) {
@@ -369,7 +374,6 @@ function safeOpen(window, createHandler)
     createHandler();
   }
 }
-
 
 app.whenReady().then(async () => {
   await initializeDatabase(); // Инициализируем базу данных
