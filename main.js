@@ -81,7 +81,7 @@ function createMainWindow() {
 
   mainWindow.loadFile('./views/save/save.html');
   mainWindow.setMenu(null);
-  //mainWindow.webContents.openDevTools();
+  enableDevTools(mainWindow);
 }
 
 // Функция создания окна просмотра
@@ -103,7 +103,7 @@ function createViewWindow() {
 
   viewWindow.loadFile('./views/view/view.html');
   viewWindow.setMenu(null);
-  viewWindow.webContents.openDevTools();
+  enableDevTools(viewWindow);
 
   viewWindow.webContents.setWindowOpenHandler(({ url }) => {
     // Открываем ссылку во внешнем браузере
@@ -138,7 +138,7 @@ function createSplashWindow() {
 
   splashWindow.loadFile('./views/splash/splash.html');
   splashWindow.setMenu(null);
-  //splashWindow.webContents.openDevTools();
+  enableDevTools(splashWindow);
 }
 
 function createSettingsWindow() {
@@ -159,7 +159,17 @@ function createSettingsWindow() {
 
   settingsWindow.loadFile('./views/settings/settings.html');
   settingsWindow.setMenu(null);
-  //settingsWindow.webContents.openDevTools();
+  enableDevTools(settingsWindow);
+}
+
+function enableDevTools(window) {
+  window.webContents.on('before-input-event', (_, input) => {
+    if (input.type === 'keyDown' && input.key === 'F12') {
+      window.webContents.isDevToolsOpened()
+        ? window.webContents.closeDevTools()
+        : window.webContents.openDevTools({ mode: 'left' });
+    }
+  });
 }
 
 // Функция сохранения содержимого буфера обмена с тегами
