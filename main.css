@@ -20,9 +20,7 @@
     --color-notification-error: #f44336;
     --color-notification-info: #2196F3;
     --color-notification-warning: #ff9800;
-    --color-remove-button: #fbcfd5;
-    --color-remove-button-hover: #ffb6c1;
-  
+    
     /* Шрифты */
     --font-primary: Arial, sans-serif;
     --font-size-base: 18px;
@@ -122,30 +120,44 @@
     border: 1px;
     border-radius: 4px;
   }
-  
-  .copy-button {
+
+  .content-item-toolbar {
     position: absolute;
     top: 3px;
-    right: 0px;
-    background: none;
+    right: 0px;    
+    display: flex;
+
+  }
+  
+  .toolbar-button {
     border: none;
     cursor: pointer;
     color: var(--color-text-secondary);
     padding: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background: none;
   }
   
-  .copy-button:hover {
+  .toolbar-button:hover {
     color: var(--color-accent);
   }
   
-  .copy-button svg {
+  .toolbar-button svg {
     width: 20px;
     height: 20px;
     fill: currentColor;
   }
+
+  .content-item .toolbar-button {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .content-item:hover .toolbar-button {
+    display: flex;
+    opacity: 1;
+  }
+  
   
   .meta-info {
     font-size: var(--font-size-meta);
@@ -163,17 +175,6 @@
     bottom: 3px;
     right: 3px;
     font-size: var(--font-size-meta);
-  }
-  
-  .remove-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--color-remove-button);
-  }
-  
-  .remove-button:hover {
-    color: var(--color-remove-button-hover);
   }
   
   /* Общие стили для заголовков */
