@@ -1,0 +1,21 @@
+function render (contentDiv, metaInfo) {
+    const checkbox = document.createElement('input');
+    checkbox.setAttribute('type', 'checkbox')
+    checkbox.style.top = '8px'
+
+    checkbox.onclick = async (event) => {
+      const contentId = event.target.parentElement.parentElement.parentElement.id;
+      const tag = event.target.parentElement.getAttribute('data-tag');
+      const state = event.target.checked;
+
+      await window.electronAPI.updateTagState(contentId, tag, state);
+    }
+
+    const metaInfoDiv = metaInfo.querySelector('div')
+    metaInfoDiv.appendChild(checkbox);
+}
+
+export default {
+    tag: 'todo',
+    render
+}

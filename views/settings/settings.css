@@ -168,3 +168,25 @@ p {
             margin-left: 50px;
             padding: 20px;
         }
+
+        /* Widgets */
+
+        .widget-block {
+            border: 1px solid #ccc;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        
+        .widget-tag {
+            margin: 0 0 8px 0;
+            font-size: 1.5em;
+            color: #333;
+        }
+        
+        .widget-description {
+            margin: 0;
+            color: #666;
+        }
+        

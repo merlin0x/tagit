@@ -14,6 +14,7 @@
         <ul>
             <li data-target="general" class="active">General</li>
             <li data-target="speed-dial-section">Speed Dial</li>
+            <li data-target="widget-section">Widgets</li>
             <li data-target="about">About</li>
         </ul>
     </div>
@@ -36,6 +37,13 @@
                 </div>
             </div>
             <button class="save-button" id="save-speed-dial-button">Save</button>
+        </section>
+
+        <section id="widget-section" class="content-section">
+            <h1>Widgets</h1>
+            <div id="widgets-container">
+                <!-- Динамические виджеты будут здесь -->
+            </div>
         </section>
 
         <div id="about" class="content-section">
@@ -75,13 +83,12 @@
 
     <script src="../speed-dial.js"></script>
     <script src="../../notifications.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const messages = {
-                failedUpdateSettings: "Не удалось обновить настройки",
-                successfullyUpdatedSettings: "Настройки успешно обновлены",
-            };
+    <script type="module">
 
+        import { messages } from "../helper.js"
+        import { getWidgetsArr } from '../widgets/widget.js'
+
+        document.addEventListener('DOMContentLoaded', () => {
             let config = {};
             let speedDial = [];
 
@@ -111,6 +118,8 @@
                     populateGeneralSettings(config);
                 } else if (targetSectionId === 'speed-dial-section') {
                     await populateSpeedDial();
+                } else if (targetSectionId === 'widget-section') {
+                    await populateWidgets();
                 }
             });
 
@@ -180,11 +189,11 @@
 
                 window.electronAPI.saveConfig(newConfig)
                     .then(() => {
-                        showNotification(messages.successfullyUpdatedSettings, 'success');
+                        showNotification(messages.settings.general.successfullyUpdatedSettings, 'success');
                     })
                     .catch((error) => {
-                        console.error(messages.failedUpdateSettings, error);
-                        showNotification(messages.failedUpdateSettings, 'error');
+                        console.error(messages.settings.general.failedUpdateSettings, error);
+                        showNotification(messages.settings.general.failedUpdateSettings, 'error');
                     });
             };
 
@@ -194,7 +203,7 @@
                 const tag = inputTag.value.trim();
 
                 if (!tag) {
-                    showNotification("Тег не может быть пустым", 'error');
+                    showNotification(messages.settings.speedDial.tagIsCannotBeEmpty, 'error');
                     return;
                 }
 
@@ -202,11 +211,11 @@
                     .then(() => {
                         const btn = document.querySelector(`.custom-button[data-key="${key}"] .button-tag`);
                         if (btn) btn.textContent = tag;
-                        showNotification("Speed Dial успешно сохранен", 'success');
+                        showNotification(messages.settings.speedDial.successefullySaveSpeedDial, 'success');
                     })
                     .catch((error) => {
-                        console.error("Не удалось сохранить Speed Dial", error);
-                        showNotification("Не удалось сохранить Speed Dial", 'error');
+                        console.error(messages.settings.speedDial.failedSaveSpeedDial, error);
+                        showNotification(messages.settings.speedDial.failedSaveSpeedDial, 'error');
                     });
             };
 
@@ -219,13 +228,19 @@
                     populateGeneralSettings(config);
                 } else if (activeSection === 'speed-dial-section') {
                     await populateSpeedDial();
+                } else if (activeSection === 'widget-section') {
+                    await populateWidgets();
                 }
             };
 
             // Функция заполнения Speed Dial
             const populateSpeedDial = async () => {
                 try {
-                    speedDial = await loadTags(speedDialClickHandler);
+                    await loadTags((tag) => {
+                        inputTag.setAttribute('data-key', tag.key);
+                        inputTag.value = tag.tag;
+                    });
+
                     const firstButton = document.querySelector('.custom-button');
                     if (firstButton) {
                         const key = firstButton.getAttribute('data-key');
@@ -234,15 +249,46 @@
                         inputTag.value = tag;
                     }
                 } catch (error) {
-                    console.error("Ошибка при загрузке Speed Dial", error);
-                    showNotification("Не удалось загрузить Speed Dial", 'error');
+                    console.error(messages.settings.speedDial.failedLoadSpeedDial, error);
+                    showNotification(messages.settings.speedDial.failedLoadSpeedDial, 'error');
                 }
             };
 
-            // Обработчик кликов по кнопкам Speed Dial
-            const speedDialClickHandler = (tag) => {
-                inputTag.setAttribute('data-key', tag.key);
-                inputTag.value = tag.tag;
+            // Функция заполнения секции "Widgets"
+            const populateWidgets = async () => {
+                const widgetsContainer = document.getElementById('widgets-container');
+                widgetsContainer.innerHTML = ''; // Очистка предыдущих виджетов
+
+                try {
+                    const widgets = getWidgetsArr(); // Предполагается, что getWidgets возвращает Promise
+
+                    if (Array.isArray(widgets) && widgets.length > 0) {
+                        widgets.forEach(widget => {
+                            const widgetBlock = document.createElement('div');
+                            widgetBlock.classList.add('widget-block');
+
+                            const tagElement = document.createElement('h2');
+                            tagElement.textContent = widget.tag;
+                            tagElement.classList.add('widget-tag');
+
+                            const descriptionElement = document.createElement('p');
+                            descriptionElement.textContent = widget.description;
+                            descriptionElement.classList.add('widget-description');
+
+                            widgetBlock.appendChild(tagElement);
+                            widgetBlock.appendChild(descriptionElement);
+
+                            widgetsContainer.appendChild(widgetBlock);
+                        });
+                    } else {
+                        const noWidgetsMessage = document.createElement('p');
+                        noWidgetsMessage.textContent = 'Нет доступных виджетов.';
+                        widgetsContainer.appendChild(noWidgetsMessage);
+                    }
+                } catch (error) {
+                    console.error('Ошибка при загрузке виджетов:', error);
+                    showNotification('Не удалось загрузить виджеты.', 'error');
+                }
             };
 
             // Вызов инициализации

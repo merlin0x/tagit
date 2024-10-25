@@ -43,17 +43,13 @@
   <script src="../../third/linkify.min.js"></script>
   <script src="../../third/linkify-html.min.js"></script>
 
-  <script>
+  <script type="module">
+
+    import { messages } from "../helper.js";
+    import { getWidgets } from '../widgets/widget.js'
 
     const linkifyOptions = { defaultProtocol: "https", className: 'link' };
     let globalContent = {};
-
-    const messages = {
-      failedToCopyContent: "Copied",
-      successefullyCopiedContent: "Failed to copy the contents",
-      failedToDeleteContent: "Failed to delete content",
-      successefullyDeletedContent: "The content has been successfully deleted"
-    }
 
     const filterInput = document.getElementById('filterInput');
     filterInput.focus();
@@ -81,10 +77,10 @@
     async function displaySavedContent(searchType = 'all', searchValue = '') {
       const savedContent = await window.electronAPI.getSavedContent({ type: searchType, value: searchValue });
       const contentList = document.getElementById('contentList');
-      contentList.innerHTML = ''; // Очищаем существующий контент
+      contentList.innerHTML = ''; 
 
       if (savedContent.length === 0) {
-        contentList.innerHTML = '<p>Нет сохранённого контента.</p>';
+        contentList.innerHTML = `<p>${messages.view.noContent}.</p>`;
         return;
       }
 
@@ -127,13 +123,11 @@
           metaInfoDiv.appendChild(checkbox);
         }
 
+        // Widgets       
+        const widgets = getWidgets();
         const updatedTags = item.tags.map(item => {
-          if (item.tag === 'red') {
-            return { ...item, postprocess: postprocessRedTag };
-          } else if (item.tag === 'todo') {
-            return { ...item, postprocess: postprocessTodoTag };
-          } else if (item.tag === 'bold') {
-            return { ...item, postprocess: postprocessBoldTag };
+          if (item.tag in widgets) {
+            return { ...item, postprocess: widgets[item.tag] };
           }
 
           return item;
@@ -194,10 +188,10 @@
     async function copyToClipboard(text) {
       const result = await window.electronAPI.copyToClipboard(text);
       if (result.success) {
-        showNotification(messages.successefullyCopiedContent, 'success');
+        showNotification(messages.view.successefullyCopiedContent, 'success');
       } else {
-        console.error(messages.failedToCopyContent, result.error);
-        showNotification(messages.failedToCopyContent, 'error');
+        console.error(messages.view.failedToCopyContent, result.error);
+        showNotification(messages.view.failedToCopyContent, 'error');
       }
     }
 
@@ -206,17 +200,17 @@
       try {
         const result = await window.electronAPI.deleteContent(id);
         if (result.success) {
-          showNotification(messages.successefullyDeletedContent, 'success');
+          showNotification(messages.view.successefullyDeletedContent, 'success');
           // Перерисовываем список после удаления
           const currentFilter = filterInput.value.trim();
 
           showContent(currentFilter);
         } else {
-          showNotification(result.message || messages.failedToDeleteContent, 'error');
+          showNotification(result.message || messages.view.failedToDeleteContent, 'error');
         }
       } catch (error) {
-        console.error(messages.failedToDeleteContent, error);
-        showNotification(messages.failedToDeleteContent, 'error');
+        console.error(messages.view.failedToDeleteContent, error);
+        showNotification(messages.view.failedToDeleteContent, 'error');
       }
     }
 
