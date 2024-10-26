@@ -172,21 +172,26 @@ p {
         /* Widgets */
 
         .widget-block {
-            border: 1px solid #ccc;
-            padding: 16px;
-            margin-bottom: 16px;
-            border-radius: 8px;
-            background-color: #f9f9f9;
+            border: 1px solid var(--color-widget-border);
+            margin: 10px;
+            position: relative;
         }
         
         .widget-tag {
-            margin: 0 0 8px 0;
-            font-size: 1.5em;
-            color: #333;
+            font-size: 1.0em;
+            color: var(--color-text);
+            margin: 10px;
+            padding: 0px;
         }
         
         .widget-description {
-            margin: 0;
-            color: #666;
+            margin: 0px 0px 5px 10px;
+            color: var(--color-widget-desc);
+            display: block;
         }
         
+        .widget-checkbox {
+            position: absolute !important;
+            top: 8px;
+            right: 10px;
+        }

@@ -4,5 +4,6 @@ function render (contentDiv, metaInfo) {
 
 export default {
     tag: 'bold',
+    description: 'The content font becomes bold',
     render
 }

@@ -275,8 +275,13 @@
                             descriptionElement.textContent = widget.description;
                             descriptionElement.classList.add('widget-description');
 
+                            const enableCheckboxElement = document.createElement('input')
+                            enableCheckboxElement.setAttribute('type', 'checkbox')
+                            enableCheckboxElement.classList.add('widget-checkbox')
+
                             widgetBlock.appendChild(tagElement);
                             widgetBlock.appendChild(descriptionElement);
+                            widgetBlock.appendChild(enableCheckboxElement);
 
                             widgetsContainer.appendChild(widgetBlock);
                         });

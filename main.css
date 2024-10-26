@@ -20,6 +20,8 @@
     --color-notification-error: #f44336;
     --color-notification-info: #2196F3;
     --color-notification-warning: #ff9800;
+    --color-widget-border: #999;
+    --color-widget-desc: #666;
     
     /* Шрифты */
     --font-primary: Arial, sans-serif;

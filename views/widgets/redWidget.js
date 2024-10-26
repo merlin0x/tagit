@@ -4,6 +4,6 @@ function render (contentDiv, metaInfo) {
 
 export default {
     tag: 'red',
-    description: 'Set red background to content',
+    description: 'The content background color changes to red',
     render
 }

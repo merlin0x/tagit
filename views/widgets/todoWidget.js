@@ -17,5 +17,6 @@ function render (contentDiv, metaInfo) {
 
 export default {
     tag: 'todo',
+    description: 'A checkbox is added to track the completion status of the entry',
     render
 }
