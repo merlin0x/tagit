@@ -87,7 +87,7 @@
       savedContent.forEach(item => {
         const contentDiv = document.createElement('div');
         contentDiv.className = 'content-item';
-        contentDiv.id = `content-${item.id}`; // Уникальный ID
+        contentDiv.id = `${item.id}`; // Уникальный ID
 
         globalContent[item.id] = {
           content: item.content,
@@ -96,32 +96,6 @@
 
         const date = new Date(item.date).toLocaleTimeString().slice(0, 5);
         const tags = item.tags.map(x => `${x.tag}, ${x.state}`).join(', ');
-
-
-        const postprocessRedTag = (contentDiv, metaInfo) => {
-          contentDiv.style.backgroundColor = 'red'
-        }
-
-        const postprocessBoldTag = (contentDiv, metaInfo) => {
-          contentDiv.style.fontWeight = 'bold'
-        }
-
-        const postprocessTodoTag = (contentDiv, metaInfo) => {
-          const checkbox = document.createElement('input');
-          checkbox.setAttribute('type', 'checkbox')
-          checkbox.style.top = '8px'
-
-          checkbox.onclick = async (event) => {
-            const contentId = event.target.parentElement.parentElement.parentElement.id;
-            const tag = event.target.parentElement.getAttribute('data-tag');
-            const state = event.target.checked;
-
-            await window.electronAPI.updateTagState(contentId, tag, state);
-          }
-
-          const metaInfoDiv = metaInfo.querySelector('div')
-          metaInfoDiv.appendChild(checkbox);
-        }
 
         // Widgets       
         const widgets = getWidgets();
@@ -178,7 +152,7 @@
 
 
           if (value.postprocess) {
-            value.postprocess(contentDivLinked, metaInfo);
+            value.postprocess(contentDivLinked, metaInfo, value.state);
           }
         })
       });

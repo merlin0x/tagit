@@ -21,7 +21,7 @@ const { Content, Tag, ContentTags } = defineModels(sequelize);
 async function initializeDatabase() {
   try {
     await sequelize.authenticate();
-    await sequelize.sync(); // Создаёт таблицы, если они не существуют
+    await sequelize.sync({ alter: true }); // Создаёт таблицы, если они не существуют
     console.log('Database connected');
   } catch (error) {
     console.error('Ошибка при подключении к базе данных:', error);
@@ -150,6 +150,37 @@ async function getOrCreateTag(tagName) {
   return Tag.findOrCreate({ where: { name: tagName } });
 }
 
+async function updateContentTagState(contentId, tagName, newState) {
+  try {
+    // Находим тег по имени
+    const tag = await Tag.findOne({ where: { name: tagName } });
+    if (!tag) {
+      return { success: false, error: `Тег с именем '${tagName}' не найден.` };
+    }
+
+    // Находим связь между контентом и тегом
+    const contentTag = await ContentTags.findOne({
+      where: {
+        contentId: contentId,
+        tagId: tag.id,
+      },
+    });
+
+    if (!contentTag) {
+      return { success: false, error: `Связь между контентом ID '${contentId}' и тегом '${tagName}' не найдена.` };
+    }
+
+    // Обновляем состояние
+    contentTag.state = newState;
+    await contentTag.save();
+
+    return { success: true };
+  } catch (error) {
+    console.error('Ошибка при обновлении состояния тега:', error);
+    return { success: false, error: error.message };
+  }
+}
+
 module.exports = {
   initializeDatabase,
   createContentTag,
@@ -159,5 +190,6 @@ module.exports = {
   getContents,
   getAllContents,
   getContent,
-  getOrCreateTag
+  getOrCreateTag,
+  updateContentTagState
 };

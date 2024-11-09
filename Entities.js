@@ -47,6 +47,11 @@ function defineModels(sequelize) {
       unique: true,
       allowNull: false,
     },
+    isHidden: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false,
+    },
   }, {
     timestamps: false,
   });

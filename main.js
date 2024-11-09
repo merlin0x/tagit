@@ -5,7 +5,7 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const yaml = require('js-yaml');
 const { ipcMain } = require('electron');
-const { initializeDatabase, createContentTag, getTags, createContent, getContentByTag, getContents, getAllContents, getContent, getOrCreateTag } = require('./database');
+const { initializeDatabase, createContentTag, getTags, createContent, getContentByTag, getContents, getAllContents, getContent, getOrCreateTag, updateContentTagState } = require('./database');
 const { createLogger, format, transports } = require('winston');
 
 let mainWindow, viewWindow, splashWindow, settingsWindow;
@@ -358,8 +358,25 @@ ipcMain.handle('view-hide', async () => {
   viewWindow.hide();
 });
 
-ipcMain.handle('update-tag-state', async (event, contentId, tag, state) => {
-  console.log(contentId, tag, state)
+ipcMain.handle('update-tag-state', async (event, contentId, tagName, newState) => {
+  try {
+    if (!contentId || !tagName) {
+      return { success: false, error: 'Недостаточно данных для обновления состояния тега.' };
+    }
+
+    const result = await updateContentTagState(contentId, tagName, newState);
+
+    if (result.success) {
+      logger.info(`Состояние тега '${tagName}' для контента ID '${contentId}' обновлено на '${newState}'.`);
+    } else {
+      logger.warn(`Не удалось обновить состояние тега: ${result.error}`);
+    }
+
+    return result;
+  } catch (error) {
+    logger.error('Ошибка в обработчике update-tag-state:', error);
+    return { success: false, error: 'Произошла ошибка при обновлении состояния тега.' };
+  }
 })
 
 

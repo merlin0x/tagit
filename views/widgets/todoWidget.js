@@ -1,7 +1,9 @@
-function render (contentDiv, metaInfo) {
+function render (contentDiv, metaInfo, state) {
+    console.log(state)
     const checkbox = document.createElement('input');
     checkbox.setAttribute('type', 'checkbox')
     checkbox.style.top = '8px'
+    checkbox.checked = state
 
     checkbox.onclick = async (event) => {
       const contentId = event.target.parentElement.parentElement.parentElement.id;
