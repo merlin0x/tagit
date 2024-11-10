@@ -21,7 +21,7 @@ const { Content, Tag, ContentTags } = defineModels(sequelize);
 async function initializeDatabase() {
   try {
     await sequelize.authenticate();
-    await sequelize.sync({ alter: true }); // Создаёт таблицы, если они не существуют
+    await sequelize.sync(); 
     console.log('Database connected');
   } catch (error) {
     console.error('Ошибка при подключении к базе данных:', error);
@@ -72,6 +72,18 @@ async function getTags() {
  */
 async function createContent(contentEntity) {
   return Content.create(contentEntity);
+}
+
+async function getContentByHash(hash) {
+  const content = Content.findOne({
+    where: {
+      hash: {
+        [Op.eq]: hash
+      }
+    }
+  })
+
+  return content;
 }
 
 /**
@@ -191,5 +203,6 @@ module.exports = {
   getAllContents,
   getContent,
   getOrCreateTag,
-  updateContentTagState
+  updateContentTagState,
+  getContentByHash
 };

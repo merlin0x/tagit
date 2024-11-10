@@ -1,24 +1,10 @@
-const arr = [
-    {
-        tag: 'todo',
-        state: null
-    },
-    {
-        tag: 'red',
-        state: null
-    }
-]
+const crypto = require('crypto');
 
-console.log(arr)
+async function hashString(message) {
+    return crypto.createHash('sha256').update(message).digest('hex');
+}
 
-const updatedArr = arr.map(item => 
-    item.tag === 'red' ? { ...item, postprocess: () => { console.log("red"); } } : item
-);
-
-console.log(updatedArr)
-
-updatedArr.forEach((value, index) => {
-    if (value.postprocess) {
-        value.postprocess()
-    }
-})
+(async () => {
+    const hash = await hashString('fdfwefewf');
+    console.log(hash);
+})();

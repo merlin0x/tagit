@@ -134,25 +134,26 @@
 
 
         // Render tags and widgets
-        const contentDivLinked = document.getElementById(contentDiv.id);
+        const contentDivLinked = document.getElementById(contentDiv.id);        
+        const metaInfo = contentDivLinked.getElementsByClassName('meta-info')[0];
+
+        const metaInfoDivStrong = document.createElement('strong');
+        metaInfoDivStrong.innerHTML = '# '
+        metaInfo.appendChild(metaInfoDivStrong);
+
         updatedTags.forEach((value, index) => {
-          const metaInfo = contentDivLinked.getElementsByClassName('meta-info')[0];
-          const metaInfoDiv = document.createElement('div');
-          metaInfoDiv.setAttribute('data-tag', value.tag) 
-          const metaInfoDivStrong = document.createElement('strong');
-          metaInfoDivStrong.innerHTML = '# '
+          const metaInfoItem = document.createElement('div');
+          metaInfoItem.setAttribute('data-tag', value.tag) 
 
           const metaInfoDivSpan = document.createElement('span');
           metaInfoDivSpan.className = 'tags'
           metaInfoDivSpan.innerHTML = `${value.tag}`
-
-          metaInfoDiv.appendChild(metaInfoDivStrong);
-          metaInfoDiv.appendChild(metaInfoDivSpan);
-          metaInfo.appendChild(metaInfoDiv);
-
+          
+          metaInfoItem.appendChild(metaInfoDivSpan);
+          metaInfo.appendChild(metaInfoItem);
 
           if (value.postprocess) {
-            value.postprocess(contentDivLinked, metaInfo, value.state);
+            value.postprocess(contentDivLinked, metaInfoItem, value.state);
           }
         })
       });

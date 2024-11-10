@@ -5,8 +5,9 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const yaml = require('js-yaml');
 const { ipcMain } = require('electron');
-const { initializeDatabase, createContentTag, getTags, createContent, getContentByTag, getContents, getAllContents, getContent, getOrCreateTag, updateContentTagState } = require('./database');
+const { initializeDatabase, createContentTag, getTags, createContent, getContentByTag, getContents, getAllContents, getContent, getOrCreateTag, updateContentTagState, getContentByHash } = require('./database');
 const { createLogger, format, transports } = require('winston');
+const { hashString } = require('./helper.js');
 
 let mainWindow, viewWindow, splashWindow, settingsWindow;
 let tray = null;
@@ -176,11 +177,7 @@ function enableDevTools(window) {
 async function saveClipboardContent(tags = []) {
   const clipboardContent = clipboard.readText();
   if (clipboardContent) {
-    const id = uuidv4();
-    const fileName = `content_${id}.txt`;
-    const filePath = path.join(app.getPath('documents'), fileName);
-    fs.writeFileSync(filePath, clipboardContent);
-
+    const hash = await hashString(clipboardContent);
     const date = new Date();
 
     try {
@@ -188,14 +185,16 @@ async function saveClipboardContent(tags = []) {
       const tagInstances = await Promise.all(tags.map(tagObj => getOrCreateTag(tagObj.tag)));
       const tagObjects = tagInstances.map(([tag]) => tag);
 
-      // Создаём запись контента
-      const content = await createContent({
-        id,
-        fileName,
-        filePath,
-        date,
-        content: clipboardContent,
-      });
+      let content = await getContentByHash(hash);
+      if (!content)
+      {
+        content = await createContent({
+          id: uuidv4(),
+          date,
+          content: clipboardContent,
+          hash
+        });
+      }
 
       // Подготавливаем данные для связывания тегов с контентом, включая состояние
       const contentTagsData = tagObjects.map((tag, index) => ({
@@ -207,9 +206,15 @@ async function saveClipboardContent(tags = []) {
       // Используем транзакцию для атомарности операции
       await createContentTag(contentTagsData);
 
+      // Save to file
+      const fileName = `${content.id}.txt`;
+      const filePath = path.join(app.getPath('documents'), fileName);
+      fs.writeFileSync(filePath, clipboardContent);
+
       logger.info(`Saved: ${filePath} with tags: ${tags.map(t => t.tag).join(', ')}`);
     } catch (error) {
       logger.error('Error when saving content:', error);
+      logger.error(error.sql);
     }
   } else {
     logger.info("Clipboard is empty.");
@@ -257,7 +262,7 @@ ipcMain.handle('save-content', async (event, tags) => {
   await saveClipboardContent(trimmedTags);
 
   // Скрываем главное окно, если оно существует
-  if (mainWindow) mainWindow.hide();
+  if (mainWindow && Config.hideTaggerAfterSetTag.value) mainWindow.hide();
 });
 
 // Обработчик для получения сохранённого контента с фильтрацией
@@ -279,8 +284,6 @@ ipcMain.handle('get-saved-content', async (event, { type, value }) => {
     // Формируем данные для передачи в рендерер
     const result = contents.map(content => ({
       id: content.id,
-      fileName: content.fileName,
-      filePath: content.filePath,
       date: content.date,
       content: content.content,
       tags: content.Tags.map(tag => { 

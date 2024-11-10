@@ -1,4 +1,4 @@
-function render(contentDiv, metaInfo, state) {
+function render(contentDiv, metaInfoItem, state) {
   console.log(state);
   
   // Создаем элемент input типа range для интерактивного изменения значения
@@ -21,9 +21,7 @@ function render(contentDiv, metaInfo, state) {
   };
   
   
-  // Добавляем контейнер в metaInfo
-  const metaInfoDiv = metaInfo.querySelector('div');
-  metaInfoDiv.appendChild(progressBar);
+  metaInfoItem.appendChild(progressBar);
 }
 
 export default {

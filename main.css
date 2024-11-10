@@ -166,10 +166,12 @@
     color: var(--color-text-secondary);
     padding: 5px;
     display: flex;
+    align-items: flex-end;
   }
   
   .tags {
     color: var(--color-accent);
+    margin-left: 5px;
   }
   
   .right-corner {

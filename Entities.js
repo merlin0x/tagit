@@ -15,14 +15,6 @@ function defineModels(sequelize) {
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
-    fileName: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    filePath: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
     date: {
       type: DataTypes.DATE,
       allowNull: false,
@@ -31,6 +23,11 @@ function defineModels(sequelize) {
       type: DataTypes.TEXT,
       allowNull: false,
     },
+    hash: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      defaultValue: ''
+    }
   }, {
     timestamps: false,
   });
@@ -59,16 +56,24 @@ function defineModels(sequelize) {
   // Определение промежуточной модели ContentTags с дополнительным полем state
   const ContentTags = sequelize.define('ContentTags', {
     state: {
-      type: DataTypes.JSON, // Используем JSON для хранения сериализованного объекта
-      allowNull: true,      // Поле может быть null
+      type: DataTypes.JSON,
+      allowNull: true,
     },
   }, {
     timestamps: false,
+    indexes: [
+      {
+        unique: true,
+        fields: ['contentId', 'tagId'],
+      },
+    ],
   });
+
 
   // Определение связи многие-ко-многим между Content и Tag через ContentTags
   Content.belongsToMany(Tag, { through: ContentTags, foreignKey: 'contentId', otherKey: 'tagId' });
   Tag.belongsToMany(Content, { through: ContentTags, foreignKey: 'tagId', otherKey: 'contentId' });
+
 
   return { Content, Tag, ContentTags };
 }

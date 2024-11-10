@@ -1,4 +1,4 @@
-function render (contentDiv, metaInfo, state) {
+function render (contentDiv, metaInfoItem, state) {
     console.log(state)
     const checkbox = document.createElement('input');
     checkbox.setAttribute('type', 'checkbox')
@@ -13,8 +13,7 @@ function render (contentDiv, metaInfo, state) {
       await window.electronAPI.updateTagState(contentId, tag, state);
     }
 
-    const metaInfoDiv = metaInfo.querySelector('div')
-    metaInfoDiv.appendChild(checkbox);
+    metaInfoItem.appendChild(checkbox);
 }
 
 export default {
