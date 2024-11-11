@@ -44,6 +44,9 @@ async function getTags() {
         'name',
         [fn('COUNT', col('Contents.id')), 'contentCount']
       ],
+      where: {
+        isHidden: false,
+      },
       include: [
         {
           model: Content,
@@ -121,6 +124,9 @@ async function getContents(value) {
     },
     include: {
       model: Tag,
+      where: {
+        isHidden: false,
+      },
       through: {
         attributes: ['state'],
       },
@@ -136,6 +142,9 @@ async function getAllContents() {
   return Content.findAll({
     include: {
       model: Tag,
+      where: {
+        isHidden: false,
+      },      
       through: {
         attributes: ['state'],
       },
