@@ -50,3 +50,10 @@
   bottom: 0px;
   top: 63px;
 }
+
+.responsive-image {
+  max-width: 300px; 
+  max-height: 300px;
+  width: auto;
+  height: auto;
+}

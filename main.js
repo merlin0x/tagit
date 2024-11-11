@@ -175,9 +175,31 @@ function enableDevTools(window) {
 
 // Функция сохранения содержимого буфера обмена с тегами
 async function saveClipboardContent(tags = []) {
-  const clipboardContent = clipboard.readText();
-  if (clipboardContent) {
-    const hash = await hashString(clipboardContent);
+  const allowedFormats = clipboard.availableFormats()
+
+  const typeExtensionMap = {
+    'text': 'txt',
+    'image': 'png'
+  }
+
+  let fileContent = null;
+  let dbContent = '';
+
+  let clipboardFormat = 'text';
+  if (allowedFormats.includes('image/png')) {
+    clipboardFormat = 'image'
+    fileContent = clipboard.readImage().toPNG();
+    dbContent = '';
+  } else {
+    dbContent = clipboard.readText();
+    fileContent = dbContent;
+  }
+
+  if (fileContent) {
+    const hash = await hashString(fileContent);
+    
+
+
     const date = new Date();
 
     try {
@@ -191,8 +213,9 @@ async function saveClipboardContent(tags = []) {
         content = await createContent({
           id: uuidv4(),
           date,
-          content: clipboardContent,
-          hash
+          content: dbContent,
+          hash,
+          type: typeExtensionMap[clipboardFormat]
         });
       }
 
@@ -207,9 +230,9 @@ async function saveClipboardContent(tags = []) {
       await createContentTag(contentTagsData);
 
       // Save to file
-      const fileName = `${content.id}.txt`;
+      const fileName = `${content.id}.${typeExtensionMap[clipboardFormat]}`;
       const filePath = path.join(app.getPath('documents'), fileName);
-      fs.writeFileSync(filePath, clipboardContent);
+      fs.writeFileSync(filePath, fileContent);
 
       logger.info(`Saved: ${filePath} with tags: ${tags.map(t => t.tag).join(', ')}`);
     } catch (error) {
@@ -281,11 +304,22 @@ ipcMain.handle('get-saved-content', async (event, { type, value }) => {
       contents = await getAllContents();
     }
 
+    const loadContent = function(content) {
+      if (content.type ==='txt') {
+        return content.content;
+      }
+
+      const fileName = `${content.id}.${content.type}`;
+      const filePath = path.join(app.getPath('documents'), fileName);
+      return filePath;
+    }
+
     // Формируем данные для передачи в рендерер
     const result = contents.map(content => ({
       id: content.id,
       date: content.date,
-      content: content.content,
+      content: loadContent(content),
+      type: content.type,
       tags: content.Tags.map(tag => { 
         return {
           tag: tag.name, 

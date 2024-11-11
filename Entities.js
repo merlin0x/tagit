@@ -23,6 +23,11 @@ function defineModels(sequelize) {
       type: DataTypes.TEXT,
       allowNull: false,
     },
+    type: {
+      type: DataTypes.TEXT,
+      defaultValue: 'txt',
+      allowNull: false,
+    },
     hash: {
       type: DataTypes.TEXT,
       allowNull: false,

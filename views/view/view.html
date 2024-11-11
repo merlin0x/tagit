@@ -107,10 +107,17 @@
           return item;
         });
 
-        const content = linkifyHtml(item.content, linkifyOptions);
+        let contentContent = '';
+        if (item.type === 'txt') {
+          const content = linkifyHtml(item.content, linkifyOptions);
+          contentContent = `<pre>${content}</pre>`;
+        } else {
+          contentContent = `<img class="responsive-image"src="${item.content}">`;
+        }
+
 
         contentDiv.innerHTML = `
-          <pre>${content}</pre>
+          ${contentContent}
           <div class="content-item-toolbar" data-id="${item.id}">
 
             <button class="toolbar-button remove-button" data-id="${item.id}" aria-label="Remove">
