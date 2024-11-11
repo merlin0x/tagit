@@ -1,6 +1,6 @@
 // save-renderer.js
 
-// Функция для вставки символа в поле ввода
+// Function to insert text at the cursor position
 function insertAtCursor(input, textToInsert) {
     const start = input.selectionStart;
     const end = input.selectionEnd;
@@ -8,6 +8,30 @@ function insertAtCursor(input, textToInsert) {
     input.value = value.slice(0, start) + textToInsert + value.slice(end);
     input.selectionStart = input.selectionEnd = start + textToInsert.length;
 }
+
+// Initialize the input field with a permanent '#' prefix
+document.addEventListener('DOMContentLoaded', () => {
+    const inputField = document.getElementById('input-field');
+    
+    // If the input is empty, set it to '#'
+    if (inputField.value.length === 0) {
+        inputField.value = '#';
+    }
+
+    // Prevent the user from deleting the '#' symbol
+    inputField.addEventListener('keydown', (event) => {
+        if (inputField.selectionStart === 0 && (event.key === 'Backspace' || event.key === 'Delete')) {
+            event.preventDefault();
+        }
+    });
+
+    // Ensure that the first character is always '#'
+    inputField.addEventListener('input', () => {
+        if (!inputField.value.startsWith('#')) {
+            inputField.value = '#' + inputField.value.replace(/^#+/, '');
+        }
+    });
+});
 
 const settingsButton = document.getElementById('settings-button')
 settingsButton.addEventListener('click', () => {
@@ -31,20 +55,20 @@ async function speedDialClickHandler(tag) {
     }])
 }
 
-// Обработка нажатий клавиш
+// Handle global keydown events
 window.addEventListener('keydown', async (event) => {
-
     const inputField = document.getElementById('input-field');
 
-    // Проверка нажатия '#'
+    // Check if '#' key is pressed
     if (event.key === '#') {
-        event.preventDefault(); // Предотвращаем стандартное поведение
-        inputField.focus(); // Перемещаем фокус на поле ввода
+        event.preventDefault(); // Prevent default behavior
+        inputField.focus(); // Focus on the input field
 
-        if (inputField.value.length === 0) {
-            insertAtCursor(inputField, '#'); // Вставляем '#'
+        // Insert '#' only if it's not already present at the start
+        if (!inputField.value.startsWith('#')) {
+            insertAtCursor(inputField, '#');
         }
-        return; // Прерываем дальнейшую обработку
+        return; // Exit early
     }
 
     const isInputFocused = (document.activeElement === inputField);
@@ -58,7 +82,7 @@ window.addEventListener('keydown', async (event) => {
         }
     }
 
-    // Закрытие окна по Esc
+    // Close window on Escape key
     if (event.key === 'Escape') {
         if (isInputFocused) {
             window.focus();
@@ -69,35 +93,36 @@ window.addEventListener('keydown', async (event) => {
     }
 });
 
-// Добавляем обработчик для нажатия Enter в поле ввода
+// Handle Enter key in the input field
 const inputField = document.getElementById('input-field');
 
 inputField.addEventListener('keydown', async (event) => {
     if (event.key === 'Enter') {
-        event.preventDefault(); // Предотвращаем стандартное поведение (например, отправку формы)
+        event.preventDefault(); // Prevent default behavior (e.g., form submission)
 
-        const inputValue = inputField.value.trim();
+        let inputValue = inputField.value.trim();
 
-        if (inputValue.length === 0) {
-            // Поле пустое, ничего не делаем
-            return;
+        // Ensure the tag starts with '#'
+        if (!inputValue.startsWith('#')) {
+            inputValue = '#' + inputValue;
         }
 
-        // Удаляем символ '#' если он есть в начале
-        const tag = inputValue.startsWith('#') ? inputValue.slice(1) : inputValue;
+        // Remove the '#' for saving
+        const tag = inputValue.slice(1);
 
         if (tag.length === 0) {
-            // Если после удаления '#' строка пуста, ничего не делаем
+            // If the tag is empty after removing '#', do nothing
             return;
         }
 
-        // Отправляем тег
+        // Save the tag
         await window.electronAPI.saveContent([{
             tag,
             state: null
         }])
 
-        // Очищаем поле ввода после отправки
-        inputField.value = '';
+        // Clear the input field and reset to '#'
+        inputField.value = '#';
+        inputField.focus();
     }
 });
