@@ -90,7 +90,9 @@
         contentDiv.id = `${item.id}`; // Уникальный ID
 
         globalContent[item.id] = {
+          id: item.id,
           content: item.content,
+          type: item.type,
           tags: item.tags
         }
 
@@ -167,8 +169,8 @@
     }
 
     // Функция копирования в буфер обмена
-    async function copyToClipboard(text) {
-      const result = await window.electronAPI.copyToClipboard(text);
+    async function copyToClipboard(contentItem) {
+      const result = await window.electronAPI.copyToClipboard(contentItem);
       if (result.success) {
         showNotification(messages.view.successefullyCopiedContent, 'success');
       } else {
@@ -232,10 +234,8 @@
       if (target.closest('.copy-button')) {
         const button = target.closest('.copy-button');
         const contentId = button.getAttribute('data-id');
-        const textToCopy = globalContent[contentId].content;
-        if (textToCopy) {
-          await copyToClipboard(textToCopy);
-        }
+
+        await copyToClipboard(globalContent[contentId])
       }
 
       // Проверяем, была ли нажата кнопка удаления

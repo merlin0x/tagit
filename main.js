@@ -1,5 +1,5 @@
 // main.js
-const { app, BrowserWindow, globalShortcut, Tray, Menu, clipboard, shell } = require('electron');
+const { app, BrowserWindow, globalShortcut, Tray, Menu, clipboard, shell, nativeImage  } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
@@ -349,9 +349,29 @@ ipcMain.handle('get-tags', async (event) => {
   return getTags();
 })
 
-ipcMain.handle('copy-to-clipboard', async (event, text) => {
+ipcMain.handle('copy-to-clipboard', async (event, contentItem) => {
   try {
-    clipboard.writeText(text);
+
+    const type = contentItem.type;
+
+    if (type !== 'txt') {
+      const fileName = `${contentItem.id}.${contentItem.type}`;
+      const filePath = path.join(app.getPath('documents'), fileName);
+
+      fs.readFile(filePath, (err, data) => {
+        if (err) {
+          console.error('Ошибка при загрузке файла:', err);
+          return;
+        }
+        
+        const image = nativeImage.createFromBuffer(data);
+      
+        clipboard.writeImage(image);
+      });      
+    } else {
+      clipboard.writeText(contentItem.content);
+    }
+
     return { success: true };
   } catch (error) {
     logger.error('Ошибка копирования в буфер обмена:', error);

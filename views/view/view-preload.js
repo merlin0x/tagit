@@ -1,7 +1,7 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  copyToClipboard: (text) => ipcRenderer.invoke('copy-to-clipboard', text),
+  copyToClipboard: (contentItem) => ipcRenderer.invoke('copy-to-clipboard', contentItem),
   getSavedContent: (params) => ipcRenderer.invoke('get-saved-content', params),
   deleteContent: (id) => ipcRenderer.invoke('delete-content', id),
   getTags: () => ipcRenderer.invoke('get-tags'),
